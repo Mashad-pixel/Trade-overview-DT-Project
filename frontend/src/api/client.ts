@@ -177,7 +177,7 @@ import type {
   BreakdownItem,
 } from "../types/trading";
 
-export function getAuthHeaders(userId?: string, token?: string): Record<string, string> {
+export function getAuthHeaders(_userId?: string, token?: string): Record<string, string> {
   const headers: Record<string, string> = {};
   const activeToken = token || (typeof localStorage !== "undefined" ? localStorage.getItem("vertex_auth_token") : null);
   // The server derives the user from the signed bearer token. X-User-Id is
