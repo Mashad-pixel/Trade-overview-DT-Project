@@ -1,378 +1,435 @@
-Portfolio Risk and Scenario Analysis
+Trade Analysis
 
-A portfolio-risk analysis prototype built with React, TypeScript, Vite, Python, and FastAPI. It provides API-backed portfolio scenario analysis, contagion simulation, and reverse stress testing. The project also contains separate "trading-journal", "trading-statistics", and "TradeFXBook" applications.
-
-«Official Project Documentation: "View/Download Jury Report (PDF)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf) | "Word (DOCX)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
-
-Project Status: All 68 automated tests passing (100% Green). Frontend TypeScript/Vite production build verified with zero errors. All core F-06 quantitative stress, contagion graph, and reverse stress endpoints operational.
-
-Disclaimer: Analytical decision-support prototype. Results are model-based outputs, not personalized investment or tax advice.»
+Project Category: Design Thinking Project (DT Project)
+Domain: Financial Technology | Trading Analytics | Risk Assessment
+Technology Stack: React, TypeScript, Vite, Python, FastAPI, SQLite
 
 ---
 
-Table of Contents
+1. Project Overview
 
-1. "Project Overview" (#1-project-overview)
-2. "Technology Stack" (#2-technology-stack)
-3. "Repository Structure" (#3-repository-structure)
-4. "Run the F-06 Application Locally" (#4-run-the-f-06-application-locally)
-5. "API Reference" (#5-api-reference)
-6. "Run the Separate Applications" (#6-run-the-separate-applications)
-7. "Architecture" (#7-architecture)
-8. "Data and Configuration" (#8-data-and-configuration)
-9. "Testing and Verification" (#9-testing-and-verification)
-10. "Security, Privacy, and Operational Limitations" (#10-security-privacy-and-operational-limitations)
-11. "Documentation" (#11-documentation)
-12. "DT-Project Submission Checklist" (#12-dt-project-submission-checklist)
+Trade Analysis is a financial technology platform developed as a Design Thinking Project. It is designed to help users analyze trading performance, evaluate financial risks, simulate hypothetical market conditions, and understand the potential impact of market fluctuations.
 
----
+The platform combines a React-based frontend with a Python backend to process financial data, perform quantitative calculations, simulate market scenarios, and present analytical results through interactive visualizations.
 
-1. About the Project & Overview
+It provides multiple analytical components, including scenario analysis, financial contagion simulation, reverse stress testing, trading statistics, and trading journal management.
 
-Vertex Portfolio Risk Lab is an interactive, quantitative decision-support environment developed as part of DT-Project, addressing Problem Statement F-06 (Investment Portfolio Risk & Scenario Analysis).
+The primary objective is to provide users with a structured environment for understanding trading performance, identifying potential vulnerabilities, and evaluating different financial scenarios.
 
-It addresses the fundamental challenge of hidden portfolio risk: allowing investors to look beyond static returns and evaluate how multi-factor market crashes, interest-rate shifts, sector disruptions, currency shocks, and cross-asset contagion affect their holdings.
+2. Key Features
 
-About the Team
+2.1 Trade Analysis
 
-* Devireddy Nehal — Project Lead & Quantitative Architecture ("backend/engine/quant.py", "backend/engine/contagion.py", "backend/engine/ai_agent.py")
-* Mohammed Zama — Backend & API Engineering ("backend/main.py", "backend/database.py", mock fixtures)
-* MD Ahmad — Frontend Lead (React/TypeScript application shell, page routing, and state orchestration)
-* Shyam Sundar — UI Widgets & Presentation (Correlation heatmap, scenario shock controls, historical vs. hypothetical projection charts)
+- Analyze trading activity and financial performance.
+- Evaluate trading statistics and historical records.
+- Examine potential risks associated with market movements.
+- Provide structured analytical results.
 
-Official Project Documentation
+2.2 Scenario Analysis
 
-* Jury Evaluation Report (PDF): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf)
-* Jury Evaluation Report (Word): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
+- Simulate hypothetical market conditions.
+- Apply financial shocks to portfolio scenarios.
+- Analyze the potential impact of changing market variables.
+- Generate structured scenario analysis results.
 
-Core F-06 Capabilities
+2.3 Financial Contagion Simulation
 
-* Portfolio loading: Reads demo portfolio fixtures from "mock-data/portfolios.json".
-* Scenario analysis: Accepts scenario requests through "POST /api/analyze-scenario".
-* Contagion simulation: Models directed-graph contagion across economic dependencies via "POST /api/contagion/simulate".
-* Reverse stress testing: Solves for catastrophic threshold breaking points via "POST /api/reverse-stress-test".
-* Risk interface: Provides React views that call the FastAPI backend for risk-related results.
-* Historical-data artifacts: Includes CSV/JSON artifacts and metadata under "f06_historical_dataset/".
+- Model relationships between connected financial entities.
+- Simulate the propagation of financial shocks.
+- Examine secondary effects and interconnected risks.
+- Visualize potential contagion scenarios.
 
-Additional Applications
+2.4 Reverse Stress Testing
 
-The project also includes a SQLite-backed trading journal mounted in the main API, a separate trading-statistics service, and a separate TradeFXBook application. These are distinct modular components.
+- Evaluate conditions that could lead to adverse financial outcomes.
+- Explore combinations of hypothetical market shocks.
+- Identify scenarios that could result in significant losses.
+- Examine potential vulnerabilities under extreme conditions.
 
----
+2.5 Trading Journal
 
-2. Technology Stack
+- Record and manage trading activity.
+- Maintain historical trade records.
+- Review trading performance.
+- Generate rule-based analytical reviews.
+- Store journal information using SQLite.
 
-Layer| Technology| Purpose
-Frontend| React, TypeScript, Vite| Interface, portfolio views, controls, charts, and API client
-API Backend| Python, FastAPI, Uvicorn, Pydantic| HTTP endpoints, request validation, orchestration, and OpenAPI documentation
-Risk Engine| Python modules in "backend/engine/"| Scenario stress analysis, contagion simulation, reverse stress testing, and related heuristics
-Storage| SQLite and process-local Python memory| Persistent journal records and temporary F-06 analysis records
-Demo Inputs| JSON fixtures and synthetic trade records| Reproducible demonstration inputs
-Historical Artifacts| CSV and JSON| Downloaded market-data artifacts and data-quality metadata
+2.6 Trading Statistics
 
-Trade-Prediction Model Status
+- Calculate trading performance metrics.
+- Analyze historical trading records.
+- Generate statistical summaries.
+- Evaluate trading consistency and performance.
 
-A supervised trade-prediction model is not currently implemented or verified in this project. The F-06 natural-language scenario parser uses deterministic keyword/rule logic; the inspected implementation does not establish a trained machine-learning model, model-training pipeline, prediction endpoint, backtest, or validated predictive performance.
+2.7 Data Visualization
 
-A future extension could evaluate a classifier such as Random Forest using historical OHLCV data, lagged returns, volatility, and other documented features. Any future model should specify its prediction target and horizon, use time-ordered training/testing, avoid future-data leakage, and report measured out-of-sample metrics. Do not describe this proposed extension as an existing feature or claim a prediction rate without reproducible evidence.
+- Correlation heatmaps.
+- Scenario shock controls.
+- Historical versus hypothetical projection charts.
+- Interactive financial analysis views.
+- Trading performance visualizations.
 
----
+3. Technology Stack
 
-3. Repository Structure
+Component| Technologies
+Frontend| React, TypeScript
+Build Tool| Vite
+Backend| Python, FastAPI
+Database| SQLite
+Data Formats| JSON, CSV
+API Architecture| REST
+Testing| Pytest
+Development Tools| Git, GitHub, VS Code
 
-This is a key directory overview, not an exhaustive file listing. Generated build output, virtual environments, caches, and local database files are omitted.
+4. System Architecture
 
-portfolio-risk-scenario-analysis/
+The platform follows a frontend-backend architecture. The frontend handles user interaction and data presentation, while the backend processes API requests, performs quantitative calculations, and manages application data.
+
+                    USER
+                      |
+                      v
+               REACT FRONTEND
+               TypeScript + Vite
+                      |
+                      v
+                 FASTAPI
+                  BACKEND
+                      |
+          +-----------+-----------+
+          |           |           |
+          v           v           v
+      QUANTITATIVE  CONTAGION   SCENARIO
+       ENGINE       ENGINE     ANALYSIS
+          |           |           |
+          +-----------+-----------+
+                      |
+                      v
+               ANALYSIS RESULTS
+                      |
+              +-------+-------+
+              |               |
+              v               v
+         VISUALIZATION     DATA STORAGE
+              |               |
+              v               v
+           USER VIEW         SQLITE
+
+Main Components
+
+Frontend Layer
+
+- React-based user interface.
+- TypeScript application logic.
+- Interactive analytical widgets.
+- API communication and state management.
+
+Backend Layer
+
+- FastAPI application.
+- Quantitative analysis engine.
+- Scenario processing.
+- Financial contagion simulation.
+- Reverse stress testing.
+- Trading journal operations.
+
+Data Layer
+
+- JSON-based demonstration portfolio data.
+- Historical CSV and JSON datasets.
+- SQLite-based trading journal storage.
+- Temporary in-memory analysis storage.
+
+5. Project Structure
+
+trade-analysis/
+│
 ├── backend/
 │   ├── engine/
 │   │   ├── __init__.py
 │   │   ├── quant.py
 │   │   ├── ai_agent.py
 │   │   └── contagion.py
-│   ├── main.py                  # Main F-06 FastAPI application
-│   ├── database.py              # Process-local analysis storage
-│   ├── journal/                 # SQLite trading journal
-│   ├── trading_user_stats/      # Separate statistics service
-│   └── requirements.txt         # Main backend dependencies
-├── tradefxbook/                 # Separate TradeFXBook application
-├── run_tradefxbook.py           # TradeFXBook entry point
-├── requirement.txt              # Root-level dependency manifest
-├── f06_historical_dataset/      # Historical-data files and metadata
+│   │
+│   ├── journal/
+│   ├── trading_user_stats/
+│   ├── main.py
+│   ├── database.py
+│   └── requirements.txt
+│
 ├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   │   └── widgets/
+│   │   └── App.tsx
+│   │
 │   ├── package.json
-│   ├── .env.example
-│   └── src/
-│       ├── api/                 # API client
-│       ├── pages/               # Page views and layout
-│       ├── components/widgets/  # Visual widgets
-│       └── App.tsx              # Main application shell
-├── mock-data/                   # Demo portfolio fixtures
-├── tests/                       # Automated test suites
-├── docs/                        # Technical and audit documentation
-├── CONTRACT.md                  # API schemas and folder conventions
-├── PROBLEM_STATEMENT.md         # F-06 problem specification
+│   └── .env.example
+│
+├── mock-data/
+│   └── portfolios.json
+│
+├── historical_dataset/
+│
+├── tradefxbook/
+│
+├── tests/
+│
+├── docs/
+│
+├── run_tradefxbook.py
+├── requirement.txt
+├── CONTRACT.md
 ├── .gitignore
 └── README.md
 
----
+6. API Documentation
 
-4. Run the F-06 Application Locally
+The primary backend exposes REST API endpoints for trading analysis and financial risk simulation.
+
+Method| Endpoint| Description
+GET| "/health"| Backend health check
+GET| "/api/portfolios"| Retrieve demonstration portfolios
+POST| "/api/analyze-scenario"| Execute scenario analysis
+GET| "/api/contagion/scenarios"| Retrieve available contagion scenarios
+POST| "/api/contagion/simulate"| Execute financial contagion simulation
+POST| "/api/reverse-stress-test"| Perform reverse stress testing
+GET| "/butterfly"| Access the associated application endpoint
+
+API Documentation Interface
+
+FastAPI provides interactive API documentation.
+
+- Swagger UI: "http://127.0.0.1:8000/docs"
+- OpenAPI Schema: "http://127.0.0.1:8000/openapi.json"
+
+7. Getting Started
 
 Prerequisites
 
-* Python installed and compatible with the dependencies in "backend/requirements.txt".
-* Node.js and npm installed.
-* A terminal capable of running the commands for your operating system.
+Install the following software before running the project:
 
-Note: The project does not establish a single verified runtime-version matrix. Use versions compatible with the checked-in dependency manifests and verify them in the target environment.
+- Python 3.10 or later
+- Node.js
+- npm
+- Git
 
-Step 1: Start the Backend
+Step 1: Clone the Repository
 
-Run from the project root.
+git clone YOUR_REPOSITORY_URL
+cd trade-analysis
 
-Windows PowerShell:
+Step 2: Set Up the Backend
+
+Create a Python virtual environment:
 
 python -m venv .venv
+
+Activate it on Windows using PowerShell:
+
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r backend/requirements.txt
-python -m uvicorn backend.main:app --reload --port 8000
 
-Linux or macOS:
+On Linux or macOS:
 
-python3 -m venv .venv
 source .venv/bin/activate
+
+Install backend dependencies:
+
 python -m pip install -r backend/requirements.txt
+
+Start the backend server:
+
 python -m uvicorn backend.main:app --reload --port 8000
 
-The main API should be available at "http://127.0.0.1:8000".
+Backend URL:
 
-* Interactive API documentation: "http://127.0.0.1:8000/docs"
-* OpenAPI schema: "http://127.0.0.1:8000/openapi.json"
-* Health endpoint: "http://127.0.0.1:8000/health"
+"http://127.0.0.1:8000"
 
-Step 2: Configure the Frontend
+API documentation:
 
-Open a second terminal from the project root.
+"http://127.0.0.1:8000/docs"
 
-Windows PowerShell:
+Step 3: Set Up the Frontend
 
-cd frontend
-npm install
-Copy-Item .env.example .env.local
-
-Linux or macOS:
+Open another terminal:
 
 cd frontend
 npm install
-cp .env.example .env.local
 
-Check "frontend/.env.local" and set the API origin to the running backend if needed:
+Create a ".env.local" file using ".env.example" as a reference.
+
+Configure the backend URL:
 
 VITE_API_BASE_URL=http://localhost:8000
 
-«Security Note: Do not put secrets in Vite environment variables intended for browser code; values prefixed with "VITE_" are exposed to the frontend bundle.»
-
-Step 3: Start the Frontend
-
-From the "frontend/" directory:
+Start the frontend development server:
 
 npm run dev
 
-Open the local URL printed by Vite in the terminal. The frontend and API must both be running. The API must also allow browser requests from the frontend origin through its CORS configuration.
+Vite will display the local frontend URL in the terminal.
 
-Suggested Demo Workflow
+8. Additional Components
 
-1. Confirm the API "/health" endpoint responds.
-2. Open the frontend using the URL printed by Vite.
-3. Load a demo portfolio.
-4. Submit a scenario and inspect the returned risk analysis.
-5. Open the contagion view and run a simulation.
-6. Open the reverse stress-test view and submit a request.
+8.1 Trading Journal
 
-Note: This is a suggested workflow, not a claim that the entire browser-to-backend sequence has already passed end-to-end testing. Verify it in the environment used for the presentation before describing it as a tested demo.
+The trading journal provides functionality for recording, managing, and reviewing trading activity.
 
----
+Key components:
 
-5. API Reference
+- Trade record management.
+- Journal analytics.
+- Rule-based trade reviews.
+- SQLite-based data storage.
 
-The primary F-06 FastAPI application exposes the following routes in the current implementation:
+Default database location:
 
-Method| Endpoint| Purpose
-"GET"| "/health"| Health check
-"GET"| "/api/portfolios"| Retrieve available demo portfolios
-"POST"| "/api/analyze-scenario"| Submit a scenario-analysis request
-"GET"| "/api/contagion/scenarios"| List available contagion scenarios
-"POST"| "/api/contagion/simulate"| Run a contagion simulation
-"POST"| "/api/reverse-stress-test"| Run reverse stress testing
-"GET"| "/butterfly"| Butterfly view/route exposed by the application
+backend/journal/trading_journal.sqlite3
 
-Use "/docs" or "/openapi.json" to inspect the current request and response schemas. Refer to "CONTRACT.md" and "docs/api-reference.md" for project-specific API details. Exact request examples should be copied from the verified schema rather than guessed.
+The database location can be configured using:
 
-Trading Journal API
+TRADING_JOURNAL_DB_PATH
 
-The trading journal is mounted under "/api/journal" in the main FastAPI application. It supports trade creation, listing, retrieval, updates, deletion, analytics, and per-trade rule-based reviews. Consult the generated OpenAPI schema for exact subpaths and request models.
+8.2 Trading Statistics
 
-Journal records are stored in a separate SQLite database. The default path is "backend/journal/trading_journal.sqlite3"; configure "TRADING_JOURNAL_DB_PATH" to override it.
+The trading statistics application provides additional analytical functionality.
 
-«Authentication Limitation: The current journal uses a fixed/demo identity and does not provide production user authentication or a multi-user authorization boundary. Do not store private or sensitive real trading records in this setup.»
+It operates as a separate API service and uses its own SQLite database.
 
----
-
-6. Run the Separate Applications
-
-These services are optional and are not required merely to start the primary F-06 API, unless a specific demonstration depends on them. Run them in separate terminals.
-
-Trading Statistics Dashboard
-
-From the project root:
+Install its development dependencies:
 
 python -m pip install -r backend/trading_user_stats/requirements-dev.txt
+
+Start the service:
+
 python -m uvicorn trading_user_stats.app.api:app --app-dir backend --reload --port 8001
 
-* Open "http://127.0.0.1:8001/" for the dashboard and "http://127.0.0.1:8001/docs" for API documentation.
-* The service uses its own SQLite database and synthetic demo trades; startup seeds 100,000 synthetic trades by default.
-* See "backend/trading_user_stats/README.md" for service-specific details.
+Local service:
 
-TradeFXBook
+"http://127.0.0.1:8001/"
 
-From the project root:
+API documentation:
+
+"http://127.0.0.1:8001/docs"
+
+The application can generate synthetic demonstration trading records for testing and analysis.
+
+8.3 TradeFXBook
+
+TradeFXBook is an additional application included in the project structure.
+
+Install its dependencies:
 
 python -m pip install -r requirement.txt
+
+Start the application:
+
 python run_tradefxbook.py --port 8080
 
-* Open "http://localhost:8080/" for the dashboard, "/docs" for OpenAPI, or "/redoc" for ReDoc.
-* The root "requirement.txt" is a shared manifest, not a dedicated TradeFXBook lockfile.
-* Review the application's configuration and replace any source-code demo secret defaults before deployment beyond a local demonstration.
+Local URL:
 
----
+"http://127.0.0.1:8080"
 
-7. Architecture
+API documentation:
 
-Browser
-  │
-  ▼
-React + TypeScript + Vite (frontend/)
-  │
-  │ HTTP API requests
-  ▼
-FastAPI application (backend/main.py)
-  ├──► backend/engine/quant.py
-  ├──► backend/engine/ai_agent.py
-  ├──► backend/engine/contagion.py
-  ├──► mock-data/portfolios.json
-  ├──► process-local F-06 analysis store
-  └──► /api/journal ──► SQLite journal database
+"http://127.0.0.1:8080/docs"
 
-Separate services:
-  • Trading Statistics ──► separate FastAPI app + SQLite database
-  • TradeFXBook        ──► separate application entry point
+9. Data Management
 
-The frontend also contains local illustrative portfolio data and calculations. API-backed risk views call the main backend and report connection or server errors rather than silently substituting successful sample responses. The natural-language scenario parser is deterministic keyword/rule logic; an integrated external LLM provider is not verified in the inspected implementation.
+The platform works with multiple types of financial and application data.
 
----
+Data Source| Purpose
+"portfolios.json"| Demonstration portfolio information
+Historical datasets| Historical market data analysis
+CSV files| Structured financial datasets
+JSON files| Portfolio and application data
+SQLite| Trading journal persistence
+Synthetic trade records| Demonstration and testing
 
-8. Data and Configuration
+Data Storage
 
-Data Inputs
+- Trading journal records are stored in SQLite.
+- Demonstration portfolios are maintained in JSON files.
+- Historical datasets are maintained in CSV and JSON formats.
+- Some analysis results are stored temporarily in application memory.
+- In-memory analysis results may be lost when the backend restarts.
 
-* Demo portfolios: "mock-data/portfolios.json".
-* Historical artifacts: Files and metadata under "f06_historical_dataset/".
-* Trading statistics: Synthetic demo trades generated by the separate statistics service.
-* Analysis storage: F-06 analysis records are process-local and are lost when the main API process restarts.
-* Journal storage: SQLite, using "TRADING_JOURNAL_DB_PATH" or the documented default path.
+10. Configuration
 
-The historical dataset metadata identifies Yahoo Finance's unofficial chart endpoint as a source and records data-quality and redistribution limitations. Check the metadata accompanying each dataset before reuse. The presence of historical observations does not establish completeness, a live feed, or permission to redistribute data.
+The application supports environment-based configuration.
 
-Environment Variables
+Environment Variable| Purpose
+"CORS_ORIGINS"| Configures allowed frontend origins
+"LOG_LEVEL"| Configures backend logging
+"VITE_API_BASE_URL"| Specifies the backend API address
+"TRADING_JOURNAL_DB_PATH"| Specifies the trading journal database location
 
-Variable| Component| Purpose
-"CORS_ORIGINS"| Main FastAPI backend| Allowed browser origins
-"LOG_LEVEL"| Main FastAPI backend| Logging level
-"VITE_API_BASE_URL"| Frontend| Base origin used for API requests
-"TRADING_JOURNAL_DB_PATH"| Trading journal| Optional SQLite database path override
+Environment-specific configuration should be maintained locally. Sensitive values should not be committed to the repository.
 
-Keep real credentials and local environment values out of version control. Do not place private secrets in "VITE_" variables because they are shipped to the browser.
+11. Testing and Validation
 
----
+Backend Testing
 
-9. Testing and Verification
-
-Frontend Checks
-
-Run from "frontend/":
-
-npm run lint
-npm run build
-
-These checks passed in the environment last checked on 25 October 2026. No frontend unit-test or browser end-to-end test script was declared at that time.
-
-Python Checks
-
-Run from the project root:
+Run the backend test suite:
 
 pytest tests/
 
-Verification Result: 68 PASSED (100% Green)
+Frontend Validation
 
-* "tests/test_engine.py": 29 tests passed (Quant scenario math, VaR, CVaR, HHI, contagion graph, reverse stress solving).
-* "tests/test_tradefxbook.py": 27 tests passed.
-* "tests/test_auth_multiuser.py": 4 tests passed.
-* "tests/test_router.py": 3 tests passed.
-* "tests/test_storage.py": 2 tests passed.
-* "tests/test_metrics.py": 2 tests passed.
-* "tests/test_analytics.py": 1 test passed.
+Run linting:
 
----
+npm run lint
 
-10. Security, Privacy, and Operational Limitations
+Run the production build:
 
-* The F-06 API is designed as an explainable decision-support prototype rather than a production brokerage execution engine.
-* The journal uses device/demo isolation and is not connected to live broker accounts.
-* F-06 analysis history is held in process-local memory during simulation sessions.
-* Browser-to-backend integration against separately launched services has not been verified end-to-end.
-* The project does not establish a production deployment configuration, backup/restore plan, monitoring, rate limiting, load testing, or CI workflow.
-* No project license was found in the inspected project state; do not assume the code is licensed for unrestricted reuse.
-* Historical/demo inputs and analytical results do not guarantee future returns or establish investment performance.
-* "TradeFXBook" contains source-code demo secret defaults that must be replaced before deployment beyond a local demo.
+npm run build
 
-Do not use this prototype as the sole basis for real investment decisions or expose it to untrusted users without appropriate security, validation, privacy, and operational controls.
+These commands provide checks for backend functionality, frontend code quality, and production build compatibility.
 
----
+12. Current Scope and Limitations
 
-11. Documentation
+The current platform is an analytical prototype. Its implemented functionality should be distinguished from potential future improvements.
 
-The project includes the following supporting documents (confirm that each linked file exists in the submitted project and that its contents match the final implementation):
+- Demonstration portfolio data is used for sample analysis.
+- Some frontend data and calculations are illustrative.
+- Scenario interpretation currently uses deterministic, rule-based logic rather than a verified external LLM or trained prediction model.
+- Analysis results stored in process memory are not persistent.
+- Production-grade authentication and multi-user security have not been established across all components.
+- Live brokerage execution is not part of the platform.
+- Historical data availability and quality depend on the underlying data source.
+- Production deployment, monitoring, and load testing are not established.
 
-* "Audit Summary" (docs/audit-summary.md)
-* "Architecture" (docs/architecture.md)
-* "Setup Guide" (docs/setup.md)
-* "API Reference" (docs/api-reference.md)
-* "Risk Engine" (docs/risk-engine.md)
-* "Data Sources" (docs/data-sources.md)
-* "Testing" (docs/testing.md)
-* "Security and Privacy" (docs/security-privacy.md)
-* "Known Limitations" (docs/known-limitations.md)
-* "AI Usage" (docs/ai-usage.md)
-* "Submission Checklist" (docs/submission-checklist.md)
-* "API and Folder Contract" (CONTRACT.md)
-* "Problem Statement" (PROBLEM_STATEMENT.md)
+13. Future Development
 
----
+Potential improvements include:
 
-12. DT-Project Submission Checklist
+- Integration of additional verified financial data sources.
+- Advanced trading performance analytics.
+- Improved portfolio optimization techniques.
+- More advanced risk prediction and forecasting models.
+- Expanded stress-testing methodologies.
+- Persistent storage for saved analysis results.
+- Stronger authentication and access control.
+- Improved frontend-backend integration.
+- Automated testing and deployment pipelines.
+- Comprehensive financial reporting and export functionality.
 
-Before the presentation or final submission:
+14. Security and Privacy Considerations
 
-- [ ] Install dependencies in a clean environment and verify the documented startup commands.
-- [ ] Run the frontend lint and production build.
-- [ ] Resolve the Python test dependency issue ("pydantic-settings") and rerun the full test suite, or disclose the unresolved failure.
-- [ ] Verify the complete browser-to-backend workflow using the exact environment intended for judging.
-- [ ] Confirm the demo URL, runtime versions, and required startup order.
-- [ ] Review historical-data attribution, applicable terms, missing-data handling, and redistribution restrictions.
-- [ ] Complete the team's AI-tool/model-use disclosure accurately.
-- [ ] Confirm team members' names, contributions, and code ownership.
-- [ ] Add an appropriate project license if one is required and intended by the team.
-- [ ] Remove development credentials and replace demo secrets before any non-local deployment.
-- [ ] Keep planned features, including any future trade-prediction model, separate from verified implemented features.
+- Application configuration should be managed through environment variables.
+- Development credentials and default secrets should be replaced before deployment.
+- API access should be protected before exposing the application to untrusted users.
+- Database access and user separation require additional production-level controls.
+- Financial datasets should be handled with appropriate attribution and data-use permissions.
+
+15. Disclaimer
+
+Trade Analysis is a financial analysis and decision-support prototype intended for research, educational, and analytical purposes.
+
+The platform does not provide personalized investment, financial, or tax advice. Simulated scenarios and historical results do not guarantee future market performance.
+
+Users should independently evaluate financial decisions and verify the accuracy of relevant data before relying on analytical results.
 
 ---
+
+Trade Analysis | Design Thinking Project (DT Project)
