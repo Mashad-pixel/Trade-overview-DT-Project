@@ -511,3 +511,159 @@
     transform: none;
   }
 }
+
+/* Market intelligence forecast */
+.aperture-app .market-forecast-panel {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 21px;
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+  box-shadow: var(--shadow);
+}
+.aperture-app .market-forecast-heading,
+.aperture-app .market-forecast-result {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.aperture-app .market-forecast-heading h2 {
+  margin: 8px 0 5px;
+  color: var(--market-text);
+  font-size: 19px;
+  letter-spacing: -.03em;
+}
+.aperture-app .market-forecast-heading p,
+.aperture-app .market-forecast-disclaimer {
+  margin: 0;
+  color: var(--market-text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.aperture-app .market-forecast-symbol {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+  color: var(--market-text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+}
+.aperture-app .market-forecast-symbol select {
+  min-height: 37px;
+  padding: 0 10px;
+  border: 1px solid var(--market-border);
+  border-radius: 8px;
+  background: var(--market-surface-elevated);
+  color: var(--market-text);
+}
+.aperture-app .market-forecast-state {
+  padding: 20px;
+  border: 1px dashed var(--market-border);
+  border-radius: 9px;
+  color: var(--market-text-secondary);
+  font-size: 12px;
+}
+.aperture-app .market-forecast-error {
+  color: var(--market-negative);
+}
+.aperture-app .market-forecast-result {
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--market-border);
+  border-radius: 10px;
+  background: var(--market-surface-elevated);
+}
+.aperture-app .market-forecast-result > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+.aperture-app .market-forecast-kicker,
+.aperture-app .market-forecast-confidence {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-direction {
+  font-size: 27px;
+  letter-spacing: -.04em;
+}
+.aperture-app .market-direction-up { color: var(--market-positive); }
+.aperture-app .market-direction-down { color: var(--market-negative); }
+.aperture-app .market-direction-sideways { color: var(--market-warning); }
+.aperture-app .market-forecast-freshness {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-forecast-freshness strong {
+  color: var(--market-text);
+  font-size: 11px;
+}
+.aperture-app .market-forecast-freshness small { font-size: 10px; }
+.aperture-app .market-data-stale { color: var(--market-warning); font-weight: 750; }
+.aperture-app .market-data-recent { color: var(--market-positive); font-weight: 750; }
+.aperture-app .market-probability-list { display: grid; gap: 11px; }
+.aperture-app .market-probability-row {
+  display: grid;
+  grid-template-columns: 76px minmax(80px, 1fr) 48px;
+  align-items: center;
+  gap: 12px;
+  color: var(--market-text-secondary);
+  font-size: 11px;
+}
+.aperture-app .market-probability-row strong {
+  color: var(--market-text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.aperture-app .market-probability-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--market-border);
+}
+.aperture-app .market-probability-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.aperture-app .market-probability-fill.up { background: var(--market-positive); }
+.aperture-app .market-probability-fill.sideways { background: var(--market-warning); }
+.aperture-app .market-probability-fill.down { background: var(--market-negative); }
+.aperture-app .market-validation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.aperture-app .market-validation-grid > div {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--market-border);
+  border-radius: 9px;
+}
+.aperture-app .market-validation-grid span {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-validation-grid strong {
+  color: var(--market-text);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.aperture-app .market-forecast-disclaimer {
+  padding-top: 12px;
+  border-top: 1px solid var(--market-border);
+  font-size: 10px;
+}
+@media (max-width: 650px) {
+  .aperture-app .market-forecast-heading,
+  .aperture-app .market-forecast-result { flex-direction: column; }
+  .aperture-app .market-forecast-symbol { width: 100%; }
+  .aperture-app .market-forecast-freshness { justify-items: start; }
+  .aperture-app .market-validation-grid { grid-template-columns: 1fr; }
+}
