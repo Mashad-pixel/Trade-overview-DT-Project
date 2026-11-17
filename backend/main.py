@@ -198,6 +198,13 @@ async def lifespan(_: FastAPI):
         status = check_demo_dataset_status()
         if not status.get("is_complete"):
             seed_demo_dataset()
+        # Import historical journal rows only after demo identities exist.
+        try:
+            from tradefxbook.legacy_migration import migrate_legacy_journal
+            migration_result = migrate_legacy_journal()
+            logger.info("Legacy journal migration: %s", migration_result)
+        except Exception:
+            logger.exception("Legacy journal migration did not complete; source data was preserved.")
     yield
 
 
