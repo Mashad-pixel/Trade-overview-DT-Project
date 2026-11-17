@@ -13,6 +13,12 @@ import uuid
 
 from tradefxbook.database import db_session
 from tradefxbook.calculations import compute_trade_pnl
+from tradefxbook.config import demo_seed_batch_ids
+
+
+def _is_seeded_demo_trade(trade: Dict[str, Any]) -> bool:
+    """Whether a trade belongs to a protected demo baseline from any supported seed version."""
+    return trade.get("seed_batch") in demo_seed_batch_ids()
 
 
 def row_to_dict(row) -> Dict[str, Any]:
@@ -116,7 +122,7 @@ def get_trade_by_id(
         trade = row_to_dict(row)
         # Check device isolation for demo users
         is_demo_trader = bool(trade.get("is_demo") or str(user_id).startswith("demo_") or user_id == "demo")
-        if is_demo_trader and trade.get("seed_batch") != "demo_seed_v1_deterministic":
+        if is_demo_trader and not _is_seeded_demo_trade(trade):
             trade_dev_id = trade.get("device_id")
             if trade_dev_id:
                 if device_id and trade_dev_id != device_id:
@@ -374,7 +380,7 @@ def delete_trade(
     existing = get_trade_by_id(trade_id, user_id, device_id=device_id, db_path=db_path)
     if not existing:
         return False
-    if existing.get("seed_batch") == "demo_seed_v1_deterministic":
+    if _is_seeded_demo_trade(existing):
         return False  # Protected read-only baseline trade
     with db_session(db_path) as conn:
         cursor = conn.execute(
@@ -404,11 +410,18 @@ def _build_trade_filter_sql(
 
     is_demo_trader = str(user_id).startswith("demo_") or user_id == "demo"
     if is_demo_trader:
+        # Seeded baseline records are shared across devices. User-created demo
+        # trades remain scoped to the device that created them.
+        seed_batches = demo_seed_batch_ids()
+        placeholders = ", ".join("?" for _ in seed_batches)
+        seeded_clause = f"seed_batch IN ({placeholders})"
         if device_id:
-            conditions.append("(seed_batch = 'demo_seed_v1_deterministic' OR (device_id IS NOT NULL AND device_id = ?))")
+            conditions.append(f"({seeded_clause} OR (device_id IS NOT NULL AND device_id = ?))")
+            params.extend(seed_batches)
             params.append(device_id)
         else:
-            conditions.append("(seed_batch = 'demo_seed_v1_deterministic' OR device_id IS NULL)")
+            conditions.append(f"({seeded_clause} OR device_id IS NULL)")
+            params.extend(seed_batches)
 
     if date_from:
         conditions.append("exit_time >= ?")

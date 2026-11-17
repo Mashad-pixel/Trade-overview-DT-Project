@@ -433,3 +433,27 @@ Users should independently evaluate financial decisions and verify the accuracy 
 ---
 
 Trade Analysis | Design Thinking Project (DT Project)
+
+## Journal data and deployment configuration
+
+The React journal and statistics screens use the TradeFXBook API under `/api/v1`.
+For local development, start the FastAPI service on port `8000` and the Vite
+frontend; the Vite development server proxies `/api` to `http://127.0.0.1:8000`.
+
+For a Vercel frontend deployment, deploy the FastAPI backend separately and set
+the Vercel project environment variable:
+
+- `VITE_API_BASE_URL`: the public base URL of the deployed FastAPI backend
+  (for example, `https://your-api-host.example.com`, without a trailing slash).
+
+Redeploy the frontend after changing this variable. Vercel's static frontend
+rewrite does not run the FastAPI service.
+
+### Journal database compatibility
+
+On backend startup, the application recognizes both the current and legacy
+demo seed identifiers. If the original `backend/trading_journal.sqlite3`
+database exists, an idempotent migration copies compatible records into the
+TradeFXBook SQLite store without deleting the source database. Rows whose
+original user cannot be mapped to an existing account are skipped and retained
+in the source database for manual review.

@@ -1,0 +1,669 @@
+/* Trade Overview — product UI refinement layer.
+   Imported after the existing dashboard and market theme to preserve feature styling. */
+
+.aperture-app {
+  --market-bg: #0b1220;
+  --market-sidebar: #101b2a;
+  --market-surface: #121e2d;
+  --market-surface-elevated: #172638;
+  --market-border: #26384b;
+  --market-text: #e8eef6;
+  --market-text-secondary: #a5b3c4;
+  --market-positive: #32b985;
+  --market-positive-strong: #269d72;
+  --market-positive-soft: #14382e;
+  --market-negative: #ef7180;
+  --market-negative-strong: #d95065;
+  --market-negative-soft: #3d202c;
+  --market-warning: #e9b45c;
+  --market-info: #76a9f5;
+  --market-focus: #8bb8ff;
+  --ink: var(--market-text);
+  --muted: var(--market-text-secondary);
+  --faint: #8292a6;
+  --line: var(--market-border);
+  --surface: var(--market-surface);
+  --surface-soft: var(--market-surface-elevated);
+  --purple: #82aef4;
+  --purple-strong: #6598ed;
+  --purple-light: #a7c8ff;
+  --purple-wash: #192e4b;
+  --shadow: 0 14px 34px rgba(0, 0, 0, .18);
+  background: var(--market-bg);
+  color: var(--market-text);
+}
+
+.aperture-app[data-theme="light"] {
+  --market-bg: #f3f6fa;
+  --market-sidebar: #ffffff;
+  --market-surface: #ffffff;
+  --market-surface-elevated: #f7f9fc;
+  --market-border: #dfe6ef;
+  --market-text: #182435;
+  --market-text-secondary: #58677a;
+  --market-positive: #13865e;
+  --market-positive-strong: #0c704e;
+  --market-positive-soft: #e7f6ef;
+  --market-negative: #c7475a;
+  --market-negative-strong: #ac3448;
+  --market-negative-soft: #fff0f2;
+  --market-warning: #a96a18;
+  --market-info: #356fc4;
+  --market-focus: #356fc4;
+  --ink: #182435;
+  --muted: #58677a;
+  --faint: #78879a;
+  --line: #dfe6ef;
+  --surface: #ffffff;
+  --surface-soft: #f7f9fc;
+  --purple: #356fc4;
+  --purple-strong: #285da8;
+  --purple-light: #4c82d2;
+  --purple-wash: #edf4ff;
+  --shadow: 0 8px 24px rgba(21, 39, 63, .06);
+  background: var(--market-bg);
+  color: var(--market-text);
+}
+
+.aperture-app .app-header {
+  min-height: 72px;
+  gap: 24px;
+  padding-inline: clamp(18px, 3.2vw, 52px);
+  border-bottom: 1px solid var(--market-border);
+  background: color-mix(in srgb, var(--market-sidebar) 92%, transparent);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
+}
+
+.aperture-app .brand {
+  gap: 12px;
+  min-width: max-content;
+}
+
+.aperture-app .brand-mark {
+  width: 29px;
+  height: 29px;
+  border-radius: 9px;
+}
+
+.aperture-app .brand-name {
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -.025em;
+}
+
+.aperture-app .brand-name small {
+  color: var(--market-text-secondary);
+  font-size: 9px;
+  letter-spacing: .14em;
+}
+
+.aperture-app .brand-divider {
+  margin-inline: 5px;
+  color: var(--market-info);
+}
+
+.aperture-app .top-nav {
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aperture-app .top-nav a {
+  padding: 10px 13px;
+  border-radius: 9px;
+  color: var(--market-text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .005em;
+  white-space: nowrap;
+  transition: color .18s ease, background .18s ease;
+}
+
+.aperture-app .top-nav a::after {
+  display: none;
+}
+
+.aperture-app .top-nav a:hover {
+  color: var(--market-text);
+  background: var(--market-surface-elevated);
+}
+
+.aperture-app .top-nav a.active {
+  color: var(--market-text);
+  background: color-mix(in srgb, var(--market-info) 16%, var(--market-surface));
+}
+
+.aperture-app .header-controls {
+  gap: 9px;
+}
+
+.aperture-app .header-user-btn,
+.aperture-app .header-select select,
+.aperture-app .theme-toggle-btn,
+.aperture-app .settings-menu summary {
+  min-height: 38px;
+  border: 1px solid var(--market-border);
+  border-radius: 9px;
+  background: var(--market-surface);
+  color: var(--market-text);
+}
+
+.aperture-app .header-user-btn {
+  padding-inline: 11px;
+}
+
+.aperture-app .header-user-btn:hover,
+.aperture-app .theme-toggle-btn:hover,
+.aperture-app .settings-menu summary:hover {
+  border-color: color-mix(in srgb, var(--market-info) 55%, var(--market-border));
+}
+
+.aperture-app .header-select select {
+  padding: 0 30px 0 11px;
+  font-size: 12px;
+}
+
+.aperture-app .workspace {
+  width: min(100% - 56px, 1540px);
+  padding-top: 32px;
+}
+
+.aperture-app .workspace-intro {
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.aperture-app .workspace-intro h1 {
+  margin-top: 7px;
+  color: var(--market-text);
+  font-size: clamp(23px, 2.2vw, 31px);
+  font-weight: 720;
+  letter-spacing: -.045em;
+  line-height: 1.16;
+}
+
+.aperture-app .breadcrumb,
+.aperture-app .eyebrow {
+  color: var(--market-text-secondary);
+  letter-spacing: .12em;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.aperture-app .profile-metadata {
+  color: var(--market-text-secondary);
+}
+
+.aperture-app .profile-metadata strong {
+  color: var(--market-text);
+}
+
+.aperture-app .as-of {
+  border: 1px solid var(--market-border);
+  border-radius: 999px;
+  background: var(--market-surface);
+  color: var(--market-text-secondary);
+  padding: 8px 11px;
+  font-size: 10px;
+}
+
+.aperture-app .metric-strip {
+  min-height: 108px;
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+  box-shadow: var(--shadow);
+}
+
+.aperture-app .metric-card {
+  border-color: var(--market-border);
+  padding: 17px 20px;
+}
+
+.aperture-app .metric-label {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.aperture-app .metric-value {
+  color: var(--market-text);
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 720;
+  letter-spacing: -.04em;
+}
+
+.aperture-app .metric-foot {
+  color: var(--market-text-secondary);
+}
+
+.aperture-app .panel {
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+  box-shadow: var(--shadow);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.aperture-app .panel:hover {
+  border-color: color-mix(in srgb, var(--market-info) 32%, var(--market-border));
+  box-shadow: var(--shadow);
+}
+
+.aperture-app .panel-heading {
+  border-bottom-color: var(--market-border);
+  padding: 17px 19px 15px;
+}
+
+.aperture-app .panel-heading h2 {
+  color: var(--market-text);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.015em;
+}
+
+.aperture-app .page-endcap {
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+}
+
+.aperture-app .endcap-copy > strong {
+  color: var(--market-text);
+}
+
+.aperture-app .endcap-tips li {
+  color: var(--market-text-secondary);
+}
+
+.aperture-app .risk-section-nav {
+  position: sticky;
+  z-index: 15;
+  top: 72px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(100% - 56px, 1540px);
+  margin: 14px auto 0;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--market-border);
+  background: var(--market-bg);
+}
+
+.aperture-app .risk-section-label {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.aperture-app .risk-section-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.aperture-app .risk-section-links button {
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--market-text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 650;
+  transition: background .16s ease, color .16s ease, border-color .16s ease;
+}
+
+.aperture-app .risk-section-links button:hover {
+  border-color: var(--market-border);
+  background: var(--market-surface);
+  color: var(--market-text);
+}
+
+.aperture-app .risk-section-links button.active {
+  border-color: color-mix(in srgb, var(--market-info) 36%, var(--market-border));
+  background: color-mix(in srgb, var(--market-info) 13%, var(--market-surface));
+  color: var(--market-text);
+}
+
+.aperture-app .risk-hub {
+  display: grid;
+  gap: 22px;
+  padding: 4px 0 12px;
+}
+
+.aperture-app .risk-hub-heading {
+  max-width: 720px;
+}
+
+.aperture-app .risk-hub-heading h2 {
+  margin: 10px 0 8px;
+  color: var(--market-text);
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 720;
+  letter-spacing: -.045em;
+  line-height: 1.18;
+}
+
+.aperture-app .risk-hub-heading p,
+.aperture-app .risk-hub-note {
+  color: var(--market-text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.aperture-app .risk-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.aperture-app .risk-hub-card {
+  display: flex;
+  min-height: 194px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 19px;
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+  color: var(--market-text);
+  cursor: pointer;
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.aperture-app .risk-hub-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--market-info) 55%, var(--market-border));
+  background: var(--market-surface-elevated);
+}
+
+.aperture-app .risk-hub-card:focus-visible,
+.aperture-app .risk-section-links button:focus-visible {
+  outline: 2px solid var(--market-focus);
+  outline-offset: 3px;
+}
+
+.aperture-app .risk-hub-card-top {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  color: var(--market-info);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.aperture-app .risk-hub-card > strong {
+  margin-top: 23px;
+  font-size: 15px;
+  letter-spacing: -.02em;
+}
+
+.aperture-app .risk-hub-description {
+  margin-top: 7px;
+  color: var(--market-text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.aperture-app .risk-hub-open {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  color: var(--market-info);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.aperture-app .risk-hub-note {
+  margin: 0;
+  padding-top: 13px;
+  border-top: 1px solid var(--market-border);
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .aperture-app .app-header {
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    padding-block: 10px;
+  }
+
+  .aperture-app .top-nav {
+    order: 3;
+    flex: 1 0 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .aperture-app .header-controls {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .aperture-app .workspace {
+    width: calc(100% - 28px);
+    padding-top: 23px;
+  }
+
+  .aperture-app .workspace-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .aperture-app .metric-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aperture-app .metric-card {
+    min-height: 92px;
+    border-bottom: 1px solid var(--market-border);
+    padding: 14px;
+  }
+
+  .aperture-app .risk-section-nav {
+    top: 108px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    width: calc(100% - 28px);
+  }
+
+  .aperture-app .risk-section-links {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  .aperture-app .risk-section-links button {
+    flex: 0 0 auto;
+  }
+
+  .aperture-app .risk-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aperture-app .risk-hub-card {
+    min-height: 170px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aperture-app .risk-hub-card,
+  .aperture-app .top-nav a,
+  .aperture-app .risk-section-links button {
+    transition: none;
+  }
+
+  .aperture-app .risk-hub-card:hover {
+    transform: none;
+  }
+}
+
+/* Market intelligence forecast */
+.aperture-app .market-forecast-panel {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 21px;
+  border: 1px solid var(--market-border);
+  border-radius: 13px;
+  background: var(--market-surface);
+  box-shadow: var(--shadow);
+}
+.aperture-app .market-forecast-heading,
+.aperture-app .market-forecast-result {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.aperture-app .market-forecast-heading h2 {
+  margin: 8px 0 5px;
+  color: var(--market-text);
+  font-size: 19px;
+  letter-spacing: -.03em;
+}
+.aperture-app .market-forecast-heading p,
+.aperture-app .market-forecast-disclaimer {
+  margin: 0;
+  color: var(--market-text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.aperture-app .market-forecast-symbol {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+  color: var(--market-text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+}
+.aperture-app .market-forecast-symbol select {
+  min-height: 37px;
+  padding: 0 10px;
+  border: 1px solid var(--market-border);
+  border-radius: 8px;
+  background: var(--market-surface-elevated);
+  color: var(--market-text);
+}
+.aperture-app .market-forecast-state {
+  padding: 20px;
+  border: 1px dashed var(--market-border);
+  border-radius: 9px;
+  color: var(--market-text-secondary);
+  font-size: 12px;
+}
+.aperture-app .market-forecast-error {
+  color: var(--market-negative);
+}
+.aperture-app .market-forecast-result {
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--market-border);
+  border-radius: 10px;
+  background: var(--market-surface-elevated);
+}
+.aperture-app .market-forecast-result > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+.aperture-app .market-forecast-kicker,
+.aperture-app .market-forecast-confidence {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-direction {
+  font-size: 27px;
+  letter-spacing: -.04em;
+}
+.aperture-app .market-direction-up { color: var(--market-positive); }
+.aperture-app .market-direction-down { color: var(--market-negative); }
+.aperture-app .market-direction-sideways { color: var(--market-warning); }
+.aperture-app .market-forecast-freshness {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-forecast-freshness strong {
+  color: var(--market-text);
+  font-size: 11px;
+}
+.aperture-app .market-forecast-freshness small { font-size: 10px; }
+.aperture-app .market-data-stale { color: var(--market-warning); font-weight: 750; }
+.aperture-app .market-data-recent { color: var(--market-positive); font-weight: 750; }
+.aperture-app .market-probability-list { display: grid; gap: 11px; }
+.aperture-app .market-probability-row {
+  display: grid;
+  grid-template-columns: 76px minmax(80px, 1fr) 48px;
+  align-items: center;
+  gap: 12px;
+  color: var(--market-text-secondary);
+  font-size: 11px;
+}
+.aperture-app .market-probability-row strong {
+  color: var(--market-text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.aperture-app .market-probability-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--market-border);
+}
+.aperture-app .market-probability-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.aperture-app .market-probability-fill.up { background: var(--market-positive); }
+.aperture-app .market-probability-fill.sideways { background: var(--market-warning); }
+.aperture-app .market-probability-fill.down { background: var(--market-negative); }
+.aperture-app .market-validation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.aperture-app .market-validation-grid > div {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--market-border);
+  border-radius: 9px;
+}
+.aperture-app .market-validation-grid span {
+  color: var(--market-text-secondary);
+  font-size: 10px;
+}
+.aperture-app .market-validation-grid strong {
+  color: var(--market-text);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.aperture-app .market-forecast-disclaimer {
+  padding-top: 12px;
+  border-top: 1px solid var(--market-border);
+  font-size: 10px;
+}
+@media (max-width: 650px) {
+  .aperture-app .market-forecast-heading,
+  .aperture-app .market-forecast-result { flex-direction: column; }
+  .aperture-app .market-forecast-symbol { width: 100%; }
+  .aperture-app .market-forecast-freshness { justify-items: start; }
+  .aperture-app .market-validation-grid { grid-template-columns: 1fr; }
+}

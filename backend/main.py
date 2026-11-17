@@ -198,6 +198,13 @@ async def lifespan(_: FastAPI):
         status = check_demo_dataset_status()
         if not status.get("is_complete"):
             seed_demo_dataset()
+        # Import historical journal rows only after demo identities exist.
+        try:
+            from tradefxbook.legacy_migration import migrate_legacy_journal
+            migration_result = migrate_legacy_journal()
+            logger.info("Legacy journal migration: %s", migration_result)
+        except Exception:
+            logger.exception("Legacy journal migration did not complete; source data was preserved.")
     yield
 
 
@@ -733,6 +740,25 @@ def get_butterfly_visualizer() -> str:
     if not vis_path.is_file():
         raise HTTPException(status_code=404, detail="Visualizer HTML file not found.")
     return vis_path.read_text(encoding="utf-8")
+
+
+@app.get("/api/v1/market/forecast")
+def get_market_forecast(symbol: str = "^NSEI") -> dict[str, Any]:
+    """Return a validated historical direction estimate and its data-freshness status."""
+    try:
+        if __package__:
+            from .market_forecast import build_forecast
+        else:  # pragma: no cover
+            from market_forecast import build_forecast
+        return build_forecast(symbol=symbol)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        logger.exception("Historical forecast dataset is missing")
+        raise HTTPException(status_code=503, detail="Historical market dataset is not installed.") from exc
+    except Exception as exc:
+        logger.exception("Historical market forecast failed")
+        raise HTTPException(status_code=500, detail="Market forecast could not be calculated.") from exc
 
 
 @app.get("/api/v1/market/news")

@@ -93,7 +93,40 @@ async function requestJson<T>(
     );
   }
 
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error(
+      "The API endpoint returned a non-JSON response. On Vercel, set VITE_API_BASE_URL to your deployed FastAPI backend URL, then redeploy the frontend."
+    );
+  }
   return response.json() as Promise<T>;
+}
+
+export interface MarketForecast {
+  symbol: string;
+  direction: "down" | "sideways" | "up";
+  probabilities: { down: number; sideways: number; up: number };
+  model_confidence: number;
+  horizon_trading_days: number;
+  latest_observation_date: string;
+  data_age_calendar_days: number;
+  data_status: "stale" | "recent";
+  validation: {
+    method: string;
+    samples: number;
+    training_samples: number;
+    validation_samples: number;
+    directional_accuracy: number;
+    multiclass_brier_score: number;
+    baseline_accuracy: number;
+  };
+  features: Record<string, number>;
+  limitations: string[];
+}
+
+export function getMarketForecast(symbol = "^NSEI"): Promise<MarketForecast> {
+  const query = new URLSearchParams({ symbol });
+  return requestJson<MarketForecast>(`/api/v1/market/forecast?${query.toString()}`);
 }
 
 export async function getPortfolios(): Promise<{ portfolios: Portfolio[] }> {
@@ -150,11 +183,11 @@ import type {
   BreakdownItem,
 } from "../types/trading";
 
-export function getAuthHeaders(userId?: string, token?: string): Record<string, string> {
+export function getAuthHeaders(_userId?: string, token?: string): Record<string, string> {
   const headers: Record<string, string> = {};
-  const activeUser = userId || (typeof localStorage !== "undefined" ? localStorage.getItem("vertex_active_user_id") : null);
   const activeToken = token || (typeof localStorage !== "undefined" ? localStorage.getItem("vertex_auth_token") : null);
-  if (activeUser) headers["X-User-Id"] = activeUser;
+  // The server derives the user from the signed bearer token. X-User-Id is
+  // intentionally not sent as an identity credential.
   if (activeToken) headers["Authorization"] = `Bearer ${activeToken}`;
   headers["X-Device-Id"] = getDeviceId();
   return headers;

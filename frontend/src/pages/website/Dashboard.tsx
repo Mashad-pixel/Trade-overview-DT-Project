@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import "./dashboard.css";
 import "./market-theme.css";
+import "./product-refresh.css";
 import ClickEffects from "./ClickEffects";
 import {
   analyzeScenario,
@@ -44,13 +45,15 @@ import {
 } from "../../components/widgets";
 import "../../components/widgets/TradingWidgets.css";
 import type { UserProfile } from "../../types/trading";
-import { getDemoUsers } from "../../api/client";
+import { getDemoUsers, getCurrentUserProfile } from "../../api/client";
+import MarketForecastWidget from "../../components/widgets/MarketForecastWidget";
 
 type Currency = "INR" | "USD";
-type PageName = "overview" | "journal" | "userstats" | "butterfly" | "reverse" | "allocation" | "compare" | "stresslab" | "news";
+type PageName = "overview" | "journal" | "userstats" | "butterfly" | "reverse" | "allocation" | "compare" | "stresslab" | "news" | "risk";
 
 const pages: Array<{ id: PageName; label: string; file: string; title: string; eyebrow: string }> = [
-  { id: "overview", label: "Risk Summary", file: "index.html?page=overview", title: "Portfolio risk summary", eyebrow: "Portfolio analytics" },
+  { id: "overview", label: "Overview", file: "index.html?page=overview", title: "Portfolio overview", eyebrow: "Portfolio analytics" },
+  { id: "risk", label: "Risk Intelligence", file: "index.html?page=risk", title: "Risk intelligence", eyebrow: "Portfolio risk tools" },
   { id: "journal", label: "Journal", file: "index.html?page=journal", title: "Trading Journal", eyebrow: "Trade execution & logging" },
   { id: "userstats", label: "User Stats", file: "index.html?page=userstats", title: "User Trading Statistics", eyebrow: "Performance & analytics" },
   { id: "butterfly", label: "Butterfly", file: "index.html?page=butterfly", title: "Butterfly contagion", eyebrow: "Causal contagion analysis" },
@@ -58,11 +61,35 @@ const pages: Array<{ id: PageName; label: string; file: string; title: string; e
   { id: "allocation", label: "Allocation", file: "index.html?page=allocation", title: "Allocation analysis", eyebrow: "Portfolio structure" },
   { id: "compare", label: "Compare", file: "index.html?page=compare", title: "Strategy comparison", eyebrow: "Allocation alternatives" },
   { id: "stresslab", label: "Stress Lab", file: "index.html?page=stresslab", title: "Scenario stress lab", eyebrow: "Hypothetical analysis" },
-  { id: "news", label: "News", file: "index.html?page=news", title: "Market news", eyebrow: "Market updates" },
+  { id: "news", label: "Market Intelligence", file: "index.html?page=news", title: "Market intelligence", eyebrow: "Market context & research" },
 ];
 
+const navigationPages: Array<{ id: PageName; label: string }> = [
+  { id: "overview", label: "Overview" },
+  { id: "journal", label: "Journal" },
+  { id: "userstats", label: "Analytics" },
+  { id: "risk", label: "Risk" },
+  { id: "news", label: "Market intelligence" },
+];
+
+const riskToolPages: Array<{ id: PageName; label: string; title: string; description: string }> = [
+  { id: "allocation", label: "Allocation", title: "Portfolio allocation", description: "Review asset weights, concentration and allocation constraints." },
+  { id: "compare", label: "Compare", title: "Strategy comparison", description: "Compare alternative allocations under consistent assumptions." },
+  { id: "stresslab", label: "Stress lab", title: "Scenario stress testing", description: "Test how the portfolio responds to hypothetical market shocks." },
+  { id: "butterfly", label: "Contagion", title: "Contagion analysis", description: "Explore how shocks can propagate across sectors and holdings." },
+  { id: "reverse", label: "Reverse test", title: "Reverse stress testing", description: "Explore the shocks that could breach a selected loss threshold." },
+];
+
+const riskPageIds: PageName[] = ["risk", "allocation", "compare", "stresslab", "butterfly", "reverse"];
 
 const pageGuidance: Record<PageName, { title: string; tips: [string, string] }> = {
+  risk: {
+    title: "Understand the risks behind the return.",
+    tips: [
+      "Start with the portfolio structure, then test the exposures that matter most.",
+      "Scenario outputs are conditional model estimates, not predictions or guarantees.",
+    ],
+  },
   overview: {
     title: "Read the whole risk picture.",
     tips: [
@@ -389,7 +416,8 @@ function Header({
   onOpenLogin: () => void;
   onOpenRegister: () => void;
 }) {
-  const activeIndex = pages.findIndex((page) => page.id === activePage);
+  const activeNavigationPage = riskPageIds.includes(activePage) ? "risk" : activePage;
+  const activeIndex = navigationPages.findIndex((page) => page.id === activeNavigationPage);
   const settingsRef = useRef<HTMLDetailsElement>(null);
 
   const closeSettings = () => {
@@ -407,30 +435,33 @@ function Header({
           e.preventDefault();
           onNavigate("overview");
         }}
-        aria-label="Vertex portfolio risk lab home"
+        aria-label="Trade Overview home"
       >
         <span className="brand-mark" aria-hidden="true">
           <span />
           <span />
           <span />
         </span>
-        <span className="brand-name">Vertex<span className="brand-divider">/</span><small>RISK LAB</small></span>
+        <span className="brand-name">Trade Overview<span className="brand-divider">/</span><small>INTELLIGENCE</small></span>
       </a>
       <nav className="top-nav" aria-label="Main navigation" style={{ "--active-tab": activeIndex } as CSSProperties}>
-        {pages.map((page) => (
-          <a
-            key={page.id}
-            href={`?page=${page.id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(page.id);
-            }}
-            className={activePage === page.id ? "active" : ""}
-            aria-current={activePage === page.id ? "page" : undefined}
-          >
-            {page.label}
-          </a>
-        ))}
+        {navigationPages.map((page) => {
+          const isActive = page.id === activeNavigationPage;
+          return (
+            <a
+              key={page.id}
+              href={`?page=${page.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate(page.id);
+              }}
+              className={isActive ? "active" : ""}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {page.label}
+            </a>
+          );
+        })}
       </nav>
       <div className="header-controls">
         <button
@@ -2950,6 +2981,66 @@ const TRADER_ARCHETYPE_MAP: Record<
   demo_trader_10: { portfolioId: "demo-trader-10", risk: "Moderate", horizon: 4 },
 };
 
+
+function RiskSectionNav({
+  activePage,
+  onNavigate,
+}: {
+  activePage: PageName;
+  onNavigate: (page: PageName) => void;
+}) {
+  const links = [{ id: "risk" as PageName, label: "Risk overview" }, ...riskToolPages.map(({ id, label }) => ({ id, label }))];
+  return (
+    <nav className="risk-section-nav" aria-label="Risk intelligence tools">
+      <span className="risk-section-label">Risk workspace</span>
+      <div className="risk-section-links">
+        {links.map((link) => (
+          <button
+            key={link.id}
+            type="button"
+            className={activePage === link.id ? "active" : ""}
+            aria-current={activePage === link.id ? "page" : undefined}
+            onClick={() => onNavigate(link.id)}
+          >
+            {link.label}
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+function RiskHub({ onNavigate }: { onNavigate: (page: PageName) => void }) {
+  return (
+    <section className="risk-hub" aria-labelledby="risk-hub-title">
+      <div className="risk-hub-heading">
+        <span className="eyebrow">PORTFOLIO RISK WORKSPACE</span>
+        <h2 id="risk-hub-title">Understand what could affect your portfolio.</h2>
+        <p>Choose a focused analysis. Each tool answers a different risk question using the portfolio and assumptions already selected.</p>
+      </div>
+      <div className="risk-hub-grid">
+        {riskToolPages.map((tool, index) => (
+          <button
+            key={tool.id}
+            type="button"
+            className="risk-hub-card"
+            onClick={() => onNavigate(tool.id)}
+          >
+            <span className="risk-hub-card-top">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <span aria-hidden="true">↗</span>
+            </span>
+            <strong>{tool.title}</strong>
+            <span className="risk-hub-description">{tool.description}</span>
+            <span className="risk-hub-open">Open analysis <span aria-hidden="true">→</span></span>
+          </button>
+        ))}
+      </div>
+      <p className="risk-hub-note">Risk scenarios are hypothetical. They describe modelled outcomes under stated assumptions and do not predict future market returns.</p>
+    </section>
+  );
+}
+
 export default function Dashboard() {
   const [savedState] = useState(loadSavedState);
   const [activePage, setActivePage] = useState<PageName>(currentPage);
@@ -3104,15 +3195,43 @@ export default function Dashboard() {
   const pageMeta = pages.find((page) => page.id === activePage) ?? pages[0];
 
   useEffect(() => {
-    getDemoUsers()
-      .then((users) => {
-        if (users && users.length > 0) {
-          const currentId = localStorage.getItem("vertex_active_user_id") || "demo_trader_01";
-          const match = users.find((u) => u.id === currentId) || users[0];
+    let active = true;
+    const token = localStorage.getItem("vertex_auth_token");
+    const storedUserId = localStorage.getItem("vertex_active_user_id");
+
+    // Restore registered users from the signed session before resolving demo
+    // personas. Never replace a valid custom account with the first demo user.
+    if (token && !token.startsWith("demo_token_")) {
+      getCurrentUserProfile(storedUserId || undefined, token)
+        .then((user) => {
+          if (!active) return;
+          setCurrentUser(user);
+          localStorage.setItem("vertex_active_user", JSON.stringify(user));
+          localStorage.setItem("vertex_active_user_id", user.id);
+        })
+        .catch((error) => {
+          if (!active) return;
+          console.warn("Stored session expired; falling back to demo account.", error);
+          localStorage.removeItem("vertex_auth_token");
+          localStorage.removeItem("vertex_active_user_id");
+          localStorage.removeItem("vertex_active_user");
+          setAuthToken("demo_token_demo_trader_01");
+          getDemoUsers().then((users) => {
+            if (active && users.length) setCurrentUser(users[0]);
+          }).catch((demoError) => console.error("Initial demo users fetch:", demoError));
+        });
+    } else {
+      getDemoUsers()
+        .then((users) => {
+          if (!active || !users?.length) return;
+          const currentId = storedUserId || "demo_trader_01";
+          const match = users.find((user) => user.id === currentId) || users[0];
           setCurrentUser(match);
-        }
-      })
-      .catch((e) => console.error("Initial demo users fetch:", e));
+          if (!storedUserId) localStorage.setItem("vertex_active_user_id", match.id);
+        })
+        .catch((error) => console.error("Initial demo users fetch:", error));
+    }
+    return () => { active = false; };
   }, []);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -3430,6 +3549,9 @@ export default function Dashboard() {
         onOpenLogin={openLogin}
         onOpenRegister={openRegister}
       />
+      {riskPageIds.includes(activePage) && (
+        <RiskSectionNav activePage={activePage} onNavigate={navigateTo} />
+      )}
 
       <div className="workspace">
         <div className="workspace-intro">
@@ -3572,6 +3694,7 @@ export default function Dashboard() {
             </div>
           </>
         )}
+          {activePage === "risk" && <RiskHub onNavigate={navigateTo} />}
           {activePage === "allocation" && (
             <div className="page-grid allocation-page-grid">
               <AllocationPanel
@@ -3723,13 +3846,16 @@ export default function Dashboard() {
             </div>
           )}
           {activePage === "news" && (
-            <NewsIntelligenceWidget
+            <>
+              <MarketForecastWidget />
+              <NewsIntelligenceWidget
               portfolio={portfolio}
               currency={currency}
               onNavigateToStressLab={(headline, _affectedTicker, scenarioId, article) => {
                 handleCatalystSelect(article, headline, scenarioId);
               }}
-            />
+              />
+            </>
           )}
           {activePage === "butterfly" && (
             <ButterflyContagionPage portfolio={portfolio} weights={weights} currency={currency} />

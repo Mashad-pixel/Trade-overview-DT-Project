@@ -75,11 +75,13 @@ def test_multi_user_journal_and_analytics_isolation(client):
 
     user_a_id = reg_a["user"]["id"]
     user_b_id = reg_b["user"]["id"]
+    auth_a = {"Authorization": f"Bearer {reg_a['token']}"}
+    auth_b = {"Authorization": f"Bearer {reg_b['token']}"}
 
     # User A creates a winning trade
     trade_a = client.post(
         "/api/v1/trades",
-        headers={"X-User-Id": user_a_id},
+        headers=auth_a,
         json={
             "symbol": "EUR/USD",
             "direction": "LONG",
@@ -98,22 +100,22 @@ def test_multi_user_journal_and_analytics_isolation(client):
     trade_a_id = trade_a.json()["id"]
 
     # User B lists trades: must be empty
-    trades_b = client.get("/api/v1/trades", headers={"X-User-Id": user_b_id}).json()
+    trades_b = client.get("/api/v1/trades", headers=auth_b).json()
     assert trades_b["total"] == 0
     assert len(trades_b["items"]) == 0
 
     # User B cannot access User A's trade directly
-    resp_unauth = client.get(f"/api/v1/trades/{trade_a_id}", headers={"X-User-Id": user_b_id})
+    resp_unauth = client.get(f"/api/v1/trades/{trade_a_id}", headers=auth_b)
     assert resp_unauth.status_code == 404
 
     # User A's analytics show 1 trade and positive net P&L
-    analytics_a = client.get("/api/v1/analytics/overview?range_preset=all", headers={"X-User-Id": user_a_id}).json()
+    analytics_a = client.get("/api/v1/analytics/overview?range_preset=all", headers=auth_a).json()
     assert analytics_a["total_closed_trades"] == 1
     assert analytics_a["net_pnl"] > 0
     assert analytics_a["win_rate"] == 100.0
 
     # User B's analytics show 0 trades
-    analytics_b = client.get("/api/v1/analytics/overview?range_preset=all", headers={"X-User-Id": user_b_id}).json()
+    analytics_b = client.get("/api/v1/analytics/overview?range_preset=all", headers=auth_b).json()
     assert analytics_b["total_closed_trades"] == 0
     assert analytics_b["net_pnl"] == 0.0
 
@@ -209,3 +211,20 @@ def test_trade_review_and_csv_import_endpoints(client):
     import_data = import_res.json()
     assert import_data["status"] == "SUCCESS"
     assert import_data["imported_count"] == 2
+
+
+def test_registered_account_rejects_user_id_header_without_token(client):
+    import uuid
+    email = f"header_only_{uuid.uuid4().hex[:8]}@example.com"
+    registered = client.post("/api/v1/auth/register", json={
+        "name": "Header Only",
+        "email": email,
+        "password": "Password123!",
+    }).json()
+    user_id = registered["user"]["id"]
+
+    response = client.get("/api/v1/trades", headers={"X-User-Id": user_id})
+    assert response.status_code == 401
+
+    valid = client.get("/api/v1/trades", headers={"Authorization": f"Bearer {registered['token']}"})
+    assert valid.status_code == 200

@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Any, Optional
 import zoneinfo
 
-from tradefxbook.config import settings
+from tradefxbook.config import settings, demo_seed_batch_ids
 from tradefxbook.database import db_session, init_db
 from tradefxbook.calculations import compute_trade_pnl
 
@@ -236,23 +236,27 @@ def check_demo_dataset_status(db_path: Optional[Any] = None) -> Dict[str, Any]:
         ).fetchone()
         demo_user_count = user_row["count"] if user_row else 0
 
+        seed_batches = demo_seed_batch_ids()
+        placeholders = ", ".join("?" for _ in seed_batches)
+        seed_filter = f"seed_batch IN ({placeholders})"
+
         trade_row = conn.execute(
-            "SELECT COUNT(*) as count FROM trades WHERE is_demo = 1 AND seed_batch = ?",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT COUNT(*) as count FROM trades WHERE is_demo = 1 AND {seed_filter}",
+            seed_batches,
         ).fetchone()
         demo_trade_count = trade_row["count"] if trade_row else 0
 
         closed_row = conn.execute(
-            "SELECT COUNT(*) as count FROM trades WHERE is_demo = 1 AND seed_batch = ? AND status = 'CLOSED'",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT COUNT(*) as count FROM trades WHERE is_demo = 1 AND {seed_filter} AND status = 'CLOSED'",
+            seed_batches,
         ).fetchone()
         closed_count = closed_row["count"] if closed_row else 0
 
         # Query counts per user
         trades_per_user = {}
         rows = conn.execute(
-            "SELECT user_id, COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND seed_batch = ? GROUP BY user_id ORDER BY user_id",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT user_id, COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND {seed_filter} GROUP BY user_id ORDER BY user_id",
+            seed_batches,
         ).fetchall()
         for r in rows:
             trades_per_user[r["user_id"]] = r["cnt"]
