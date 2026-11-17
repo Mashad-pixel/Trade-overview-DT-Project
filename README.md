@@ -1,10 +1,10 @@
 Portfolio Risk and Scenario Analysis
 
-A portfolio-risk analysis prototype built with React, TypeScript, Vite, Python, and FastAPI. It provides API-backed portfolio scenario analysis, contagion simulation, and reverse stress testing. The repository also contains separate "trading-journal", "trading-statistics", and "TradeFXBook" applications.
+A portfolio-risk analysis prototype built with React, TypeScript, Vite, Python, and FastAPI. It provides API-backed portfolio scenario analysis, contagion simulation, and reverse stress testing. The project also contains separate "trading-journal", "trading-statistics", and "TradeFXBook" applications.
 
-«Official Submission Report: "📄 View/Download Jury Report (PDF)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf) | "Word (DOCX)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
+«Official Project Documentation: "View/Download Jury Report (PDF)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf) | "Word (DOCX)" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
 
-Project Status: ✅ All 68 Automated Tests Passing (100% Green). Frontend TypeScript/Vite production build verified with zero errors. All core F-06 quantitative stress, contagion graph, and reverse stress endpoints operational.
+Project Status: All 68 automated tests passing (100% Green). Frontend TypeScript/Vite production build verified with zero errors. All core F-06 quantitative stress, contagion graph, and reverse stress endpoints operational.
 
 Disclaimer: Analytical decision-support prototype. Results are model-based outputs, not personalized investment or tax advice.»
 
@@ -29,9 +29,9 @@ Table of Contents
 
 1. About the Project & Overview
 
-Vertex Portfolio Risk Lab is an interactive, quantitative decision-support environment developed for DT-Project, addressing Problem Statement F-06 (Investment Portfolio Risk & Scenario Analysis).
+Vertex Portfolio Risk Lab is an interactive, quantitative decision-support environment developed as part of DT-Project, addressing Problem Statement F-06 (Investment Portfolio Risk & Scenario Analysis).
 
-It addresses the fundamental challenge of hidden portfolio risk: allowing investors to look beyond static returns and evaluate how multi-factor market crashes, interest-rate shifts, sector disruptions, currency shocks, and cross-asset contagion affect their holdings in real time.
+It addresses the fundamental challenge of hidden portfolio risk: allowing investors to look beyond static returns and evaluate how multi-factor market crashes, interest-rate shifts, sector disruptions, currency shocks, and cross-asset contagion affect their holdings.
 
 About the Team
 
@@ -42,8 +42,8 @@ About the Team
 
 Official Project Documentation
 
-* 📄 Jury Evaluation Report (PDF): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf)
-* 📝 Jury Evaluation Report (Word): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
+* Jury Evaluation Report (PDF): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.pdf)
+* Jury Evaluation Report (Word): ""docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx"" (./docs/Investment_Portfolio_Risk_Scenario_Analysis_Jury_Report.docx)
 
 Core F-06 Capabilities
 
@@ -54,9 +54,9 @@ Core F-06 Capabilities
 * Risk interface: Provides React views that call the FastAPI backend for risk-related results.
 * Historical-data artifacts: Includes CSV/JSON artifacts and metadata under "f06_historical_dataset/".
 
-Other Applications in This Repository
+Additional Applications
 
-The repository also includes a SQLite-backed trading journal mounted in the main API, a separate trading-statistics service, and a separate TradeFXBook application. These are distinct modular components.
+The project also includes a SQLite-backed trading journal mounted in the main API, a separate trading-statistics service, and a separate TradeFXBook application. These are distinct modular components.
 
 ---
 
@@ -72,7 +72,7 @@ Historical Artifacts| CSV and JSON| Downloaded market-data artifacts and data-qu
 
 Trade-Prediction Model Status
 
-A supervised trade-prediction model is not currently implemented or verified in this repository. The F-06 natural-language scenario parser uses deterministic keyword/rule logic; the inspected implementation does not establish a trained machine-learning model, model-training pipeline, prediction endpoint, backtest, or validated predictive performance.
+A supervised trade-prediction model is not currently implemented or verified in this project. The F-06 natural-language scenario parser uses deterministic keyword/rule logic; the inspected implementation does not establish a trained machine-learning model, model-training pipeline, prediction endpoint, backtest, or validated predictive performance.
 
 A future extension could evaluate a classifier such as Random Forest using historical OHLCV data, lagged returns, volatility, and other documented features. Any future model should specify its prediction target and horizon, use time-ordered training/testing, avoid future-data leakage, and report measured out-of-sample metrics. Do not describe this proposed extension as an existing feature or claim a prediction rate without reproducible evidence.
 
@@ -82,7 +82,7 @@ A future extension could evaluate a classifier such as Random Forest using histo
 
 This is a key directory overview, not an exhaustive file listing. Generated build output, virtual environments, caches, and local database files are omitted.
 
-Srujana_hackathon2026/
+portfolio-risk-scenario-analysis/
 ├── backend/
 │   ├── engine/
 │   │   ├── __init__.py
@@ -124,11 +124,11 @@ Prerequisites
 * Node.js and npm installed.
 * A terminal capable of running the commands for your operating system.
 
-Note: The repository does not establish a single verified runtime-version matrix. Use versions compatible with the checked-in dependency manifests and verify them in the target environment.
+Note: The project does not establish a single verified runtime-version matrix. Use versions compatible with the checked-in dependency manifests and verify them in the target environment.
 
 Step 1: Start the Backend
 
-Run from the repository root.
+Run from the project root.
 
 Windows PowerShell:
 
@@ -152,7 +152,7 @@ The main API should be available at "http://127.0.0.1:8000".
 
 Step 2: Configure the Frontend
 
-Open a second terminal from the repository root.
+Open a second terminal from the project root.
 
 Windows PowerShell:
 
@@ -206,7 +206,7 @@ Method| Endpoint| Purpose
 "POST"| "/api/reverse-stress-test"| Run reverse stress testing
 "GET"| "/butterfly"| Butterfly view/route exposed by the application
 
-Use "/docs" or "/openapi.json" to inspect the current request and response schemas. Refer to "CONTRACT.md" and "docs/api-reference.md" for repository-specific API details. Exact request examples should be copied from the verified schema rather than guessed.
+Use "/docs" or "/openapi.json" to inspect the current request and response schemas. Refer to "CONTRACT.md" and "docs/api-reference.md" for project-specific API details. Exact request examples should be copied from the verified schema rather than guessed.
 
 Trading Journal API
 
@@ -224,7 +224,7 @@ These services are optional and are not required merely to start the primary F-0
 
 Trading Statistics Dashboard
 
-From the repository root:
+From the project root:
 
 python -m pip install -r backend/trading_user_stats/requirements-dev.txt
 python -m uvicorn trading_user_stats.app.api:app --app-dir backend --reload --port 8001
@@ -235,7 +235,7 @@ python -m uvicorn trading_user_stats.app.api:app --app-dir backend --reload --po
 
 TradeFXBook
 
-From the repository root:
+From the project root:
 
 python -m pip install -r requirement.txt
 python run_tradefxbook.py --port 8080
@@ -308,7 +308,7 @@ These checks passed in the environment last checked on 25 October 2026. No front
 
 Python Checks
 
-Run from the repository root:
+Run from the project root:
 
 pytest tests/
 
@@ -330,8 +330,8 @@ Verification Result: 68 PASSED (100% Green)
 * The journal uses device/demo isolation and is not connected to live broker accounts.
 * F-06 analysis history is held in process-local memory during simulation sessions.
 * Browser-to-backend integration against separately launched services has not been verified end-to-end.
-* The repository does not establish a production deployment configuration, backup/restore plan, monitoring, rate limiting, load testing, or CI workflow.
-* No repository license was found in the inspected project state; do not assume the code is licensed for unrestricted reuse.
+* The project does not establish a production deployment configuration, backup/restore plan, monitoring, rate limiting, load testing, or CI workflow.
+* No project license was found in the inspected project state; do not assume the code is licensed for unrestricted reuse.
 * Historical/demo inputs and analytical results do not guarantee future returns or establish investment performance.
 * "TradeFXBook" contains source-code demo secret defaults that must be replaced before deployment beyond a local demo.
 
@@ -341,7 +341,7 @@ Do not use this prototype as the sole basis for real investment decisions or exp
 
 11. Documentation
 
-The repository includes the following supporting documents (confirm that each linked file exists in the submitted repository and that its contents match the final implementation):
+The project includes the following supporting documents (confirm that each linked file exists in the submitted project and that its contents match the final implementation):
 
 * "Audit Summary" (docs/audit-summary.md)
 * "Architecture" (docs/architecture.md)
@@ -371,7 +371,7 @@ Before the presentation or final submission:
 - [ ] Review historical-data attribution, applicable terms, missing-data handling, and redistribution restrictions.
 - [ ] Complete the team's AI-tool/model-use disclosure accurately.
 - [ ] Confirm team members' names, contributions, and code ownership.
-- [ ] Add an appropriate repository license if one is required and intended by the team.
+- [ ] Add an appropriate project license if one is required and intended by the team.
 - [ ] Remove development credentials and replace demo secrets before any non-local deployment.
 - [ ] Keep planned features, including any future trade-prediction model, separate from verified implemented features.
 
