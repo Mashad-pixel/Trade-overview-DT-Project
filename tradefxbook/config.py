@@ -43,3 +43,13 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+# Older releases wrote this identifier into the seeded rows. Keep recognizing it
+# so databases created by those releases remain readable without reseeding.
+LEGACY_DEMO_SEED_BATCHES = ("demo_seed_v1_deterministic",)
+
+
+def demo_seed_batch_ids() -> tuple[str, ...]:
+    """Return current and previously used seed identifiers, without duplicates."""
+    return tuple(dict.fromkeys((settings.DEMO_SEED_BATCH, *LEGACY_DEMO_SEED_BATCHES)))
