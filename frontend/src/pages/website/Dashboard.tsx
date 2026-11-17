@@ -3195,15 +3195,43 @@ export default function Dashboard() {
   const pageMeta = pages.find((page) => page.id === activePage) ?? pages[0];
 
   useEffect(() => {
-    getDemoUsers()
-      .then((users) => {
-        if (users && users.length > 0) {
-          const currentId = localStorage.getItem("vertex_active_user_id") || "demo_trader_01";
-          const match = users.find((u) => u.id === currentId) || users[0];
+    let active = true;
+    const token = localStorage.getItem("vertex_auth_token");
+    const storedUserId = localStorage.getItem("vertex_active_user_id");
+
+    // Restore registered users from the signed session before resolving demo
+    // personas. Never replace a valid custom account with the first demo user.
+    if (token && !token.startsWith("demo_token_")) {
+      getCurrentUserProfile(storedUserId || undefined, token)
+        .then((user) => {
+          if (!active) return;
+          setCurrentUser(user);
+          localStorage.setItem("vertex_active_user", JSON.stringify(user));
+          localStorage.setItem("vertex_active_user_id", user.id);
+        })
+        .catch((error) => {
+          if (!active) return;
+          console.warn("Stored session expired; falling back to demo account.", error);
+          localStorage.removeItem("vertex_auth_token");
+          localStorage.removeItem("vertex_active_user_id");
+          localStorage.removeItem("vertex_active_user");
+          setAuthToken("demo_token_demo_trader_01");
+          getDemoUsers().then((users) => {
+            if (active && users.length) setCurrentUser(users[0]);
+          }).catch((demoError) => console.error("Initial demo users fetch:", demoError));
+        });
+    } else {
+      getDemoUsers()
+        .then((users) => {
+          if (!active || !users?.length) return;
+          const currentId = storedUserId || "demo_trader_01";
+          const match = users.find((user) => user.id === currentId) || users[0];
           setCurrentUser(match);
-        }
-      })
-      .catch((e) => console.error("Initial demo users fetch:", e));
+          if (!storedUserId) localStorage.setItem("vertex_active_user_id", match.id);
+        })
+        .catch((error) => console.error("Initial demo users fetch:", error));
+    }
+    return () => { active = false; };
   }, []);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
