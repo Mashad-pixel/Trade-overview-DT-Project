@@ -114,6 +114,15 @@ def get_current_user(
             detail=f"User {target_user_id} not found and no demo users available.",
         )
 
+    # User IDs are selectors, not proof of identity. Public demo personas may
+    # be selected intentionally; every registered account must present a
+    # cryptographically verified bearer token.
+    if not authenticated_via_token and not user.get("is_demo"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="A valid bearer token is required for registered accounts.",
+        )
+
     return user
 
 
