@@ -12,7 +12,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from tradefxbook.config import settings
+from tradefxbook.config import settings, demo_seed_batch_ids
 from tradefxbook.database import db_session, init_db
 
 
@@ -30,6 +30,10 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
     init_db(target_path)
 
     with db_session(target_path) as conn:
+        seed_batches = demo_seed_batch_ids()
+        placeholders = ", ".join("?" for _ in seed_batches)
+        seed_filter = f"seed_batch IN ({placeholders})"
+
         # 1. Total demo users
         user_rows = conn.execute(
             "SELECT id, name, starting_balance, timezone, currency, is_demo FROM users WHERE is_demo = 1 AND id LIKE 'demo_trader_%' ORDER BY id"
@@ -38,15 +42,15 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
 
         # 2. Total seeded demo trades
         trade_count_row = conn.execute(
-            "SELECT COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND seed_batch = ?",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND {seed_filter}",
+            seed_batches,
         ).fetchone()
         total_seeded_trades = trade_count_row["cnt"] if trade_count_row else 0
 
         # 3. Total closed seeded demo trades
         closed_count_row = conn.execute(
-            "SELECT COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND seed_batch = ? AND status = 'CLOSED'",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT COUNT(*) as cnt FROM trades WHERE is_demo = 1 AND {seed_filter} AND status = 'CLOSED'",
+            seed_batches,
         ).fetchone()
         total_closed_trades = closed_count_row["cnt"] if closed_count_row else 0
 
@@ -60,11 +64,11 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
                    SUM(CASE WHEN net_pnl = 0 THEN 1 ELSE 0 END) as breakevens,
                    SUM(net_pnl) as total_net_pnl
             FROM trades
-            WHERE is_demo = 1 AND seed_batch = ?
+            WHERE is_demo = 1 AND {seed_filter}
             GROUP BY user_id
             ORDER BY user_id
-            """,
-            (settings.DEMO_SEED_BATCH,),
+            """.replace("seed_batch IN", f"seed_batch IN", 1),
+            seed_batches,
         ).fetchall()
 
         trades_per_user = {}
@@ -80,8 +84,8 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
 
         # 5. Check uniqueness of trade IDs
         unique_ids_row = conn.execute(
-            "SELECT COUNT(DISTINCT id) as cnt FROM trades WHERE is_demo = 1 AND seed_batch = ?",
-            (settings.DEMO_SEED_BATCH,),
+            f"SELECT COUNT(DISTINCT id) as cnt FROM trades WHERE is_demo = 1 AND {seed_filter}",
+            seed_batches,
         ).fetchone()
         distinct_ids_count = unique_ids_row["cnt"] if unique_ids_row else 0
 
