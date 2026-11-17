@@ -96,6 +96,33 @@ async function requestJson<T>(
   return response.json() as Promise<T>;
 }
 
+export interface MarketForecast {
+  symbol: string;
+  direction: "down" | "sideways" | "up";
+  probabilities: { down: number; sideways: number; up: number };
+  model_confidence: number;
+  horizon_trading_days: number;
+  latest_observation_date: string;
+  data_age_calendar_days: number;
+  data_status: "stale" | "recent";
+  validation: {
+    method: string;
+    samples: number;
+    training_samples: number;
+    validation_samples: number;
+    directional_accuracy: number;
+    multiclass_brier_score: number;
+    baseline_accuracy: number;
+  };
+  features: Record<string, number>;
+  limitations: string[];
+}
+
+export function getMarketForecast(symbol = "^NSEI"): Promise<MarketForecast> {
+  const query = new URLSearchParams({ symbol });
+  return requestJson<MarketForecast>(`/api/v1/market/forecast?${query.toString()}`);
+}
+
 export async function getPortfolios(): Promise<{ portfolios: Portfolio[] }> {
   return requestJson<{ portfolios: Portfolio[] }>("/api/portfolios");
 }
