@@ -93,6 +93,12 @@ async function requestJson<T>(
     );
   }
 
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error(
+      "The API endpoint returned a non-JSON response. On Vercel, set VITE_API_BASE_URL to your deployed FastAPI backend URL, then redeploy the frontend."
+    );
+  }
   return response.json() as Promise<T>;
 }
 
