@@ -726,3 +726,54 @@ def test_cross_device_trade_isolation_prevents_cross_laptop_influence(api_client
         # Clean up Alice's trade
         api_client.delete(f"/api/v1/trades/{alice_trade_id}", headers=headers_alice)
 
+
+
+def test_seeded_demo_journal_rows_are_visible_on_any_device(api_client):
+    """The seeded demo baseline is shared and must not disappear behind device filters."""
+    headers = {
+        "Authorization": "Bearer demo_token_demo_trader_01",
+        "X-Device-Id": "journal-regression-device-a",
+    }
+    response = api_client.get("/api/v1/trades?page=1&page_size=5", headers=headers)
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total"] >= 10_000
+    assert payload["items"]
+
+    trade_id = payload["items"][0]["id"]
+    other_device = {
+        "Authorization": "Bearer demo_token_demo_trader_01",
+        "X-Device-Id": "journal-regression-device-b",
+    }
+    detail = api_client.get(f"/api/v1/trades/{trade_id}", headers=other_device)
+    assert detail.status_code == 200
+    assert detail.json()["id"] == trade_id
+
+
+def test_legacy_seed_marker_remains_visible_and_protected(tmp_path):
+    """Databases from the older release remain readable without destructive reseeding."""
+    from tradefxbook.database import init_db as initialize_test_db
+    from tradefxbook.repository import list_trades_paginated, delete_trade
+
+    path = tmp_path / "legacy-seed.db"
+    initialize_test_db(path)
+    with db_session(path) as conn:
+        conn.execute(
+            "INSERT INTO users (id,name,email,password_hash,starting_balance,currency,timezone,is_demo,created_at) "
+            "VALUES ('demo_trader_01','Demo','demo@legacy.test','hash',50000,'USD','UTC',1,'2026-01-01T00:00:00Z')"
+        )
+        conn.execute(
+            "INSERT INTO trades (id,user_id,symbol,asset_class,direction,status,is_demo,entry_time,exit_time,entry_price,exit_price,quantity,seed_batch,created_at,updated_at) "
+            "VALUES ('legacy_trade_1','demo_trader_01','EUR/USD','Forex','LONG','CLOSED',1,'2026-01-01T10:00:00Z','2026-01-01T11:00:00Z',1.08,1.09,1,'demo_seed_v1_deterministic','2026-01-01T10:00:00Z','2026-01-01T11:00:00Z')"
+        )
+
+    listed = list_trades_paginated(
+        user_id="demo_trader_01",
+        device_id="a-different-device",
+        page=1,
+        page_size=10,
+        db_path=path,
+    )
+    assert listed["total"] == 1
+    assert listed["items"][0]["id"] == "legacy_trade_1"
+    assert delete_trade("legacy_trade_1", "demo_trader_01", device_id="a-different-device", db_path=path) is False
