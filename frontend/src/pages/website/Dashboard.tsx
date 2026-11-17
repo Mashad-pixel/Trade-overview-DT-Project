@@ -45,7 +45,7 @@ import {
 } from "../../components/widgets";
 import "../../components/widgets/TradingWidgets.css";
 import type { UserProfile } from "../../types/trading";
-import { getDemoUsers } from "../../api/client";
+import { getDemoUsers, getCurrentUserProfile } from "../../api/client";
 import MarketForecastWidget from "../../components/widgets/MarketForecastWidget";
 
 type Currency = "INR" | "USD";
