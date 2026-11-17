@@ -56,7 +56,7 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
 
         # 4. Trades per demo user
         user_dist_rows = conn.execute(
-            """
+            f"""
             SELECT user_id, COUNT(*) as cnt,
                    SUM(CASE WHEN status = 'CLOSED' THEN 1 ELSE 0 END) as closed_cnt,
                    SUM(CASE WHEN net_pnl > 0 THEN 1 ELSE 0 END) as wins,
@@ -67,7 +67,7 @@ def verify_dataset(db_path: Optional[Path] = None, verbose: bool = True) -> Dict
             WHERE is_demo = 1 AND {seed_filter}
             GROUP BY user_id
             ORDER BY user_id
-            """.replace("seed_batch IN", f"seed_batch IN", 1),
+            """,
             seed_batches,
         ).fetchall()
 
