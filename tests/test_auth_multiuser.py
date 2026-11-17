@@ -109,7 +109,7 @@ def test_multi_user_journal_and_analytics_isolation(client):
     assert resp_unauth.status_code == 404
 
     # User A's analytics show 1 trade and positive net P&L
-    analytics_a = client.get("/api/v1/analytics/overview?range_preset=all", headers={"X-User-Id": user_a_id}).json()
+    analytics_a = client.get("/api/v1/analytics/overview?range_preset=all", headers=auth_a).json()
     assert analytics_a["total_closed_trades"] == 1
     assert analytics_a["net_pnl"] > 0
     assert analytics_a["win_rate"] == 100.0
