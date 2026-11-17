@@ -15,7 +15,7 @@ from typing import Any
 from tradefxbook.config import settings
 from tradefxbook.repository import create_trade, get_user_by_id
 
-DEFAULT_SOURCE = Path(__file__).resolve().parents[1] / "trading_journal.sqlite3"
+DEFAULT_SOURCE = Path(__file__).resolve().parents[1] / "backend" / "trading_journal.sqlite3"
 MIGRATION_BATCH = "legacy_journal_migration_v1"
 
 
