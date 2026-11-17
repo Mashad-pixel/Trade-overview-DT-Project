@@ -179,9 +179,9 @@ import type {
 
 export function getAuthHeaders(userId?: string, token?: string): Record<string, string> {
   const headers: Record<string, string> = {};
-  const activeUser = userId || (typeof localStorage !== "undefined" ? localStorage.getItem("vertex_active_user_id") : null);
   const activeToken = token || (typeof localStorage !== "undefined" ? localStorage.getItem("vertex_auth_token") : null);
-  if (activeUser) headers["X-User-Id"] = activeUser;
+  // The server derives the user from the signed bearer token. X-User-Id is
+  // intentionally not sent as an identity credential.
   if (activeToken) headers["Authorization"] = `Bearer ${activeToken}`;
   headers["X-Device-Id"] = getDeviceId();
   return headers;
