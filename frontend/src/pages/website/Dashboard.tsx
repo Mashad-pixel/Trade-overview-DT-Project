@@ -46,6 +46,7 @@ import {
 import "../../components/widgets/TradingWidgets.css";
 import type { UserProfile } from "../../types/trading";
 import { getDemoUsers } from "../../api/client";
+import MarketForecastWidget from "../../components/widgets/MarketForecastWidget";
 
 type Currency = "INR" | "USD";
 type PageName = "overview" | "journal" | "userstats" | "butterfly" | "reverse" | "allocation" | "compare" | "stresslab" | "news" | "risk";
@@ -3817,13 +3818,16 @@ export default function Dashboard() {
             </div>
           )}
           {activePage === "news" && (
-            <NewsIntelligenceWidget
+            <>
+              <MarketForecastWidget />
+              <NewsIntelligenceWidget
               portfolio={portfolio}
               currency={currency}
               onNavigateToStressLab={(headline, _affectedTicker, scenarioId, article) => {
                 handleCatalystSelect(article, headline, scenarioId);
               }}
-            />
+              />
+            </>
           )}
           {activePage === "butterfly" && (
             <ButterflyContagionPage portfolio={portfolio} weights={weights} currency={currency} />
