@@ -735,6 +735,25 @@ def get_butterfly_visualizer() -> str:
     return vis_path.read_text(encoding="utf-8")
 
 
+@app.get("/api/v1/market/forecast")
+def get_market_forecast(symbol: str = "^NSEI") -> dict[str, Any]:
+    """Return a validated historical direction estimate and its data-freshness status."""
+    try:
+        if __package__:
+            from .market_forecast import build_forecast
+        else:  # pragma: no cover
+            from market_forecast import build_forecast
+        return build_forecast(symbol=symbol)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        logger.exception("Historical forecast dataset is missing")
+        raise HTTPException(status_code=503, detail="Historical market dataset is not installed.") from exc
+    except Exception as exc:
+        logger.exception("Historical market forecast failed")
+        raise HTTPException(status_code=500, detail="Market forecast could not be calculated.") from exc
+
+
 @app.get("/api/v1/market/news")
 @app.get("/api/news")
 def get_market_news_feed(
