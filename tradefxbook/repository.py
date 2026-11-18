@@ -62,8 +62,11 @@ def create_user(
     timezone: str = "UTC",
     profile_description: str = "",
     db_path: Optional[Any] = None,
+    terms_version: Optional[str] = None,
+    privacy_version: Optional[str] = None,
+    legal_accepted_at: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Registers a new user and creates their account."""
+    """Registers a new user and creates their account, recording legal acceptance when provided."""
     import uuid
     from tradefxbook.generator import hash_password
     user_id = f"user_{uuid.uuid4().hex[:10]}"
@@ -79,8 +82,9 @@ def create_user(
             """
             INSERT INTO users (
                 id, name, email, password_hash, starting_balance, currency,
-                timezone, is_demo, profile_description, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                timezone, is_demo, profile_description, created_at,
+                terms_version, terms_accepted_at, privacy_version, privacy_accepted_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 user_id,
@@ -93,6 +97,10 @@ def create_user(
                 0,
                 profile_description,
                 now_str,
+                terms_version,
+                legal_accepted_at if terms_version else None,
+                privacy_version,
+                legal_accepted_at if privacy_version else None,
             ),
         )
     user = get_user_by_id(user_id, db_path=db_path)

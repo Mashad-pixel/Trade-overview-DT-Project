@@ -26,7 +26,11 @@ CREATE TABLE IF NOT EXISTS users (
     timezone TEXT NOT NULL DEFAULT 'UTC',
     is_demo INTEGER NOT NULL DEFAULT 0,
     profile_description TEXT DEFAULT '',
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    terms_version TEXT,
+    terms_accepted_at TEXT,
+    privacy_version TEXT,
+    privacy_accepted_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS trades (
@@ -122,6 +126,14 @@ def init_db(db_path: Optional[Path] = None) -> None:
     Initializes database schema and ensures all indexes exist safely without dropping data.
     """
     with db_session(db_path) as conn:
+        # Add legal-consent columns to databases created before they existed.
+        users_table = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").fetchone()
+        if users_table:
+            existing_user_columns = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+            for column in ("terms_version", "terms_accepted_at", "privacy_version", "privacy_accepted_at"):
+                if column not in existing_user_columns:
+                    conn.execute(f"ALTER TABLE users ADD COLUMN {column} TEXT;")
+
         # Ensure backwards-compatible column migration for pre-existing databases before index creation
         cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='trades'")
         if cursor.fetchone():

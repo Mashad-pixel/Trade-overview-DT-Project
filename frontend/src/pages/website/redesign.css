@@ -1,0 +1,408 @@
+/* ==========================================================================
+   Trade Overview — redesign layer (tokens, polish, interactions, legal page)
+   Imported last so it refines the existing dashboard, market and product
+   layers without changing their markup, data or feature behaviour.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens (derived from the existing market palette)
+   -------------------------------------------------------------------------- */
+.aperture-app,
+.legal-page {
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 16px;
+  --ds-ease-out: cubic-bezier(.2, .7, .2, 1);
+  --ds-duration-fast: .16s;
+  --ds-duration-base: .22s;
+  --ds-ring: 0 0 0 3px color-mix(in srgb, var(--market-focus) 35%, transparent);
+  --ds-lift-shadow: 0 16px 36px rgb(0 0 0 / 22%);
+  --ds-hairline: color-mix(in srgb, var(--market-border) 80%, transparent);
+}
+
+.aperture-app[data-theme="light"],
+.legal-page[data-theme="light"] {
+  --ds-lift-shadow: 0 14px 30px rgb(21 39 63 / 10%);
+}
+
+/* Financial figures: stable digit widths so columns and KPIs do not jitter */
+.aperture-app .metric-value,
+.aperture-app .metric-foot,
+.aperture-app table td,
+.aperture-app table th,
+.aperture-app .demo-balance {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Visible keyboard focus everywhere, not only on the dashboard shell */
+.aperture-app :focus-visible,
+.legal-page :focus-visible {
+  outline: none;
+  box-shadow: var(--ds-ring);
+  border-radius: var(--ds-radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   2. Header and navigation
+   -------------------------------------------------------------------------- */
+.aperture-app .app-header {
+  backdrop-filter: saturate(140%) blur(10px);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+}
+
+.aperture-app .top-nav a {
+  position: relative;
+}
+
+/* Animated active indicator: a line that draws in under the active tab */
+.aperture-app .top-nav a::after {
+  display: block;
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--market-info);
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+.aperture-app .top-nav a.active::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .aperture-app .top-nav a {
+    transition: color var(--ds-duration-fast) ease, background-color var(--ds-duration-fast) ease;
+  }
+
+  .aperture-app .top-nav a::after {
+    transition: transform var(--ds-duration-base) var(--ds-ease-out);
+  }
+
+  .aperture-app .top-nav a:hover::after {
+    transform: scaleX(.5);
+  }
+
+  .aperture-app .top-nav a.active:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Buttons: colour transition and press feedback
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .aperture-app button,
+  .aperture-app .header-user-btn,
+  .aperture-app .theme-toggle-btn,
+  .aperture-app .settings-menu summary,
+  .aperture-app .auth-close-btn,
+  .aperture-app .btn-select-demo,
+  .aperture-app .btn-auth-submit {
+    transition:
+      background-color var(--ds-duration-fast) ease,
+      border-color var(--ds-duration-fast) ease,
+      color var(--ds-duration-fast) ease,
+      box-shadow var(--ds-duration-fast) ease,
+      transform 0.12s ease;
+  }
+
+  .aperture-app button:not(:disabled):active,
+  .aperture-app .header-user-btn:active,
+  .aperture-app .theme-toggle-btn:active,
+  .aperture-app .btn-select-demo:active,
+  .aperture-app .btn-auth-submit:not(:disabled):active {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+.aperture-app button:disabled,
+.aperture-app .btn-auth-submit:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+/* --------------------------------------------------------------------------
+   4. Cards: lift, shadow and border on hover
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .aperture-app .panel,
+  .aperture-app .metric-card,
+  .aperture-app .risk-hub-card,
+  .aperture-app .demo-card {
+    transition:
+      transform var(--ds-duration-base) var(--ds-ease-out),
+      box-shadow var(--ds-duration-base) var(--ds-ease-out),
+      border-color var(--ds-duration-base) ease;
+  }
+
+  .aperture-app .panel:hover,
+  .aperture-app .metric-card:hover,
+  .aperture-app .risk-hub-card:hover,
+  .aperture-app .demo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-lift-shadow);
+    border-color: color-mix(in srgb, var(--market-info) 34%, var(--market-border));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Tables: subtle row highlight
+   -------------------------------------------------------------------------- */
+.aperture-app tbody tr {
+  transition: background-color var(--ds-duration-fast) ease;
+}
+
+.aperture-app tbody tr:hover {
+  background-color: color-mix(in srgb, var(--market-info) 7%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   6. Dropdowns and modals: entrance animations
+   -------------------------------------------------------------------------- */
+@keyframes ds-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ds-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ds-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .aperture-app .settings-menu[open] > :not(summary) {
+    animation: ds-pop-in var(--ds-duration-base) var(--ds-ease-out) both;
+    transform-origin: top right;
+  }
+
+  .aperture-app .auth-modal-backdrop {
+    animation: ds-fade-in var(--ds-duration-base) ease both;
+  }
+
+  .aperture-app .auth-modal-card {
+    animation: ds-modal-in .28s var(--ds-ease-out) both;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Responsive refinements for small screens
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .aperture-app .app-header {
+    gap: 12px;
+  }
+
+  .aperture-app .top-nav a {
+    padding: 9px 10px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Terms and Conditions page (/terms)
+   -------------------------------------------------------------------------- */
+.legal-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  justify-content: space-between;
+}
+
+.legal-back-link {
+  color: var(--market-text-secondary);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--ds-radius-sm);
+}
+
+.legal-back-link:hover {
+  color: var(--market-text);
+  background: var(--market-surface-elevated);
+}
+
+.legal-article {
+  width: min(860px, 100% - 40px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px) 0 48px;
+  flex: 1;
+}
+
+.legal-hero {
+  display: grid;
+  gap: 10px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--market-border);
+}
+
+.legal-hero h1 {
+  margin: 0;
+  color: var(--market-text);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 750;
+  letter-spacing: -.03em;
+  line-height: 1.12;
+}
+
+.legal-meta {
+  margin: 0;
+  color: var(--market-text-secondary);
+  font-size: 14px;
+}
+
+.legal-draft-note {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--market-warning);
+  border-radius: 0 var(--ds-radius-sm) var(--ds-radius-sm) 0;
+  background: color-mix(in srgb, var(--market-warning) 10%, transparent);
+  color: var(--market-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.legal-placeholder {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--market-warning) 16%, transparent);
+  color: var(--market-warning);
+  font-family: var(--mono);
+  font-size: .86em;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.legal-toc {
+  margin: 28px 0 8px;
+  padding: 20px 22px;
+  border: 1px solid var(--market-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--market-surface);
+}
+
+.legal-toc-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--market-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.legal-toc ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 24px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.legal-toc a {
+  color: var(--market-info);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.legal-toc a:hover {
+  text-decoration: underline;
+}
+
+.legal-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--ds-hairline);
+  scroll-margin-top: 90px;
+}
+
+.legal-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 14px;
+  color: var(--market-text);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.legal-section-number {
+  color: var(--market-info);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.legal-block {
+  margin: 0 0 12px;
+  color: var(--market-text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.legal-block ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.legal-block li {
+  margin-bottom: 6px;
+}
+
+.legal-footer {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .legal-toc ol {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-back-link {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legal-section {
+    scroll-behavior: auto;
+  }
+}
+
+
+/* Legal consent and global modal animation: AuthModal is portalled to document.body. */
+.legal-header-links { display: flex; align-items: center; gap: 4px; }
+.auth-modal-card .legal-consent-check {
+  display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 14px;
+  color: var(--market-text-secondary, #58677a); font-size: 13px; line-height: 1.5; cursor: pointer;
+}
+.auth-modal-card .legal-consent-check input {
+  flex-shrink: 0; width: 16px; height: 16px; margin-top: 2px;
+  accent-color: var(--market-info, #356fc4); cursor: pointer;
+}
+.auth-modal-card .legal-consent-check a, .auth-modal-card .auth-legal-note a {
+  color: var(--market-info, #356fc4); text-decoration: underline; text-underline-offset: 2px;
+}
+.auth-modal-card .auth-legal-note {
+  margin: 14px 0 0; color: var(--market-text-secondary, #58677a);
+  font-size: 12px; line-height: 1.5; text-align: center;
+}
+.auth-modal-card .btn-auth-submit:disabled { cursor: not-allowed; opacity: .5; }
+@media (prefers-reduced-motion: no-preference) {
+  .auth-modal-backdrop { animation: ds-fade-in var(--ds-duration-base, .22s) ease both; }
+  .auth-modal-card { animation: ds-modal-in .28s cubic-bezier(.2, .7, .2, 1) both; }
+}

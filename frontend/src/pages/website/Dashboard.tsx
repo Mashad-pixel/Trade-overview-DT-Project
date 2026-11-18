@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import "./dashboard.css";
 import "./market-theme.css";
 import "./product-refresh.css";
+import "./redesign.css";
 import ClickEffects from "./ClickEffects";
 import {
   analyzeScenario,
@@ -3930,6 +3931,9 @@ export default function Dashboard() {
             >
               Overview ↑
             </a>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/privacy#contact">Contact</a>
           </div>
         </footer>
       </div>
@@ -3946,3 +3950,4 @@ export default function Dashboard() {
     </main>
   );
 }
+

@@ -238,6 +238,10 @@ export async function registerUser(payload: {
   starting_balance?: number;
   currency?: string;
   timezone?: string;
+  terms_version: string;
+  privacy_version: string;
+  accepted_terms: boolean;
+  accepted_privacy: boolean;
 }): Promise<{
   status: string;
   user: UserProfile;

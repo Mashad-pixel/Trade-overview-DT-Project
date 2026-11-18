@@ -25,6 +25,10 @@ class UserCreate(UserBase):
 
 class UserOut(UserBase):
     created_at: str
+    terms_version: Optional[str] = None
+    terms_accepted_at: Optional[str] = None
+    privacy_version: Optional[str] = None
+    privacy_accepted_at: Optional[str] = None
 
 
 class TradeBase(BaseModel):
@@ -300,6 +304,17 @@ class RegisterRequest(BaseModel):
     starting_balance: float = Field(default=50000.0, gt=0)
     currency: str = Field(default="USD", max_length=10)
     timezone: str = Field(default="UTC", max_length=50)
+    terms_version: str = Field(..., min_length=1, max_length=20)
+    privacy_version: str = Field(..., min_length=1, max_length=20)
+    accepted_terms: bool
+    accepted_privacy: bool
+
+    @field_validator("accepted_terms", "accepted_privacy")
+    @classmethod
+    def _must_accept(cls, value: bool) -> bool:
+        if value is not True:
+            raise ValueError("You must accept the Terms and Conditions and the Privacy Policy to create an account.")
+        return value
 
 
 class AuthResponse(BaseModel):

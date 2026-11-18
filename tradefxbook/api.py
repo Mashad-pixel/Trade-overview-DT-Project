@@ -54,6 +54,7 @@ from tradefxbook.generator import (
     reset_demo_data,
 )
 from tradefxbook.auth import get_current_user, authenticate_user, create_access_token
+from tradefxbook.legal import TERMS_VERSION, PRIVACY_POLICY_VERSION
 
 
 
@@ -123,6 +124,15 @@ def register_new_user(reg_in: RegisterRequest):
     Registers a new trading account with starting balance and timezone.
     Returns new user profile and authentication token.
     """
+    if reg_in.terms_version != TERMS_VERSION or reg_in.privacy_version != PRIVACY_POLICY_VERSION:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                f"The Terms and Conditions (version {TERMS_VERSION}) or Privacy Policy "
+                f"(version {PRIVACY_POLICY_VERSION}) have changed. Please review and accept the current versions."
+            ),
+        )
+    accepted_at = datetime.now(timezone.utc).isoformat()
     try:
         user = create_user(
             name=reg_in.name,
@@ -131,6 +141,9 @@ def register_new_user(reg_in: RegisterRequest):
             starting_balance=reg_in.starting_balance,
             currency=reg_in.currency,
             timezone=reg_in.timezone,
+            terms_version=TERMS_VERSION,
+            privacy_version=PRIVACY_POLICY_VERSION,
+            legal_accepted_at=accepted_at,
         )
     except ValueError as exc:
         raise HTTPException(

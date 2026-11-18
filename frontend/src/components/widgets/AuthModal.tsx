@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import type { UserProfile } from "../../types/trading";
 import { getDemoUsers, switchDemoUser, loginUser, registerUser } from "../../api/client";
+import { PRIVACY_POLICY_VERSION, TERMS_VERSION } from "../../pages/website/legalVersions";
 
 const getFallbackIsoDate = () => new Date().toISOString();
 
@@ -43,6 +44,7 @@ export function AuthModal({
   const [regBalance, setRegBalance] = useState("50000");
   const [regCurrency, setRegCurrency] = useState("USD");
   const [regTimezone, setRegTimezone] = useState("America/New_York");
+  const [regAcceptedLegal, setRegAcceptedLegal] = useState(false);
 
   const loadDemoUsers = useCallback(async () => {
     try {
@@ -63,6 +65,7 @@ export function AuthModal({
         loadDemoUsers();
         setErrorMsg(null);
         setSuccessMsg(null);
+        setRegAcceptedLegal(false);
       });
     }
   }, [isOpen, initialTab, loadDemoUsers]);
@@ -118,6 +121,10 @@ export function AuthModal({
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
+    if (!regAcceptedLegal) {
+      setErrorMsg("Please accept the Terms and Conditions and the Privacy Policy to create an account.");
+      return;
+    }
     try {
       setLoading(true);
       setErrorMsg(null);
@@ -128,6 +135,10 @@ export function AuthModal({
         starting_balance: parseFloat(regBalance) || 50000,
         currency: regCurrency,
         timezone: regTimezone,
+        terms_version: TERMS_VERSION,
+        privacy_version: PRIVACY_POLICY_VERSION,
+        accepted_terms: regAcceptedLegal,
+        accepted_privacy: regAcceptedLegal,
       });
       localStorage.setItem("vertex_active_user_id", res.user.id);
       localStorage.setItem("vertex_auth_token", res.token);
@@ -281,6 +292,11 @@ export function AuthModal({
               <button type="submit" disabled={loading} className="btn-auth-submit">
                 {loading ? "Authenticating..." : "Sign In"}
               </button>
+              <p className="auth-legal-note">
+                By signing in you can review our{" "}
+                <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+              </p>
             </form>
           )}
 
@@ -367,7 +383,16 @@ export function AuthModal({
                   </select>
                 </div>
               </div>
-              <button type="submit" disabled={loading} className="btn-auth-submit">
+              <label className="legal-consent-check">
+                <input type="checkbox" checked={regAcceptedLegal} onChange={(e) => setRegAcceptedLegal(e.target.checked)} required />
+                <span>
+                  I have read and agree to the{" "}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+                  {" "}and the{" "}
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                </span>
+              </label>
+              <button type="submit" disabled={loading || !regAcceptedLegal} className="btn-auth-submit">
                 {loading ? "Creating Account..." : "Create Account & Start Journaling"}
               </button>
             </form>
