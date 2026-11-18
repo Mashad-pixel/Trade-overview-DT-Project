@@ -1,5 +1,4 @@
-"""Small in-memory analysis store used by the Srujana F-06 prototype.
-
+"""
 The current PLAN.md specifies an in-memory database. Records are lost when
 this Python process restarts. Replace this module with SQLite if durable
 analysis history becomes a requirement.
