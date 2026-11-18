@@ -12,6 +12,14 @@ import pytest
 from fastapi.testclient import TestClient
 from backend.main import app
 from tradefxbook.repository import get_user_by_id
+from tradefxbook.legal import TERMS_VERSION, PRIVACY_POLICY_VERSION
+
+CONSENT = {
+    "terms_version": TERMS_VERSION,
+    "privacy_version": PRIVACY_POLICY_VERSION,
+    "accepted_terms": True,
+    "accepted_privacy": True,
+}
 
 
 @pytest.fixture
@@ -25,6 +33,7 @@ def test_register_and_login_flow(client):
     import uuid
     test_email = f"trader_{uuid.uuid4().hex[:8]}@example.com"
     reg_payload = {
+        **CONSENT,
         "name": "Alpha Trader",
         "email": test_email,
         "password": "SecurePassword123!",
@@ -69,8 +78,8 @@ def test_multi_user_journal_and_analytics_isolation(client):
     email_a = f"user_a_{uuid.uuid4().hex[:6]}@demo.test"
     email_b = f"user_b_{uuid.uuid4().hex[:6]}@demo.test"
 
-    reg_a = client.post("/api/v1/auth/register", json={"name": "User A", "email": email_a, "password": "password123", "starting_balance": 50000}).json()
-    reg_b = client.post("/api/v1/auth/register", json={"name": "User B", "email": email_b, "password": "password123", "starting_balance": 50000}).json()
+    reg_a = client.post("/api/v1/auth/register", json={**CONSENT, "name": "User A", "email": email_a, "password": "password123", "starting_balance": 50000}).json()
+    reg_b = client.post("/api/v1/auth/register", json={**CONSENT, "name": "User B", "email": email_b, "password": "password123", "starting_balance": 50000}).json()
 
 
     user_a_id = reg_a["user"]["id"]
@@ -125,6 +134,7 @@ def test_token_cryptographic_verification_and_spoofing_protection(client):
     import uuid
     email = f"secure_user_{uuid.uuid4().hex[:6]}@test.com"
     reg = client.post("/api/v1/auth/register", json={
+        **CONSENT,
         "name": "Secure Trader",
         "email": email,
         "password": "Password123!",
@@ -217,6 +227,7 @@ def test_registered_account_rejects_user_id_header_without_token(client):
     import uuid
     email = f"header_only_{uuid.uuid4().hex[:8]}@example.com"
     registered = client.post("/api/v1/auth/register", json={
+        **CONSENT,
         "name": "Header Only",
         "email": email,
         "password": "Password123!",

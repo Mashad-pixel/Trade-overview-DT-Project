@@ -3931,6 +3931,9 @@ export default function Dashboard() {
             >
               Overview ↑
             </a>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/privacy#contact">Contact</a>
           </div>
         </footer>
       </div>

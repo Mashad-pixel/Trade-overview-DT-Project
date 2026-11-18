@@ -383,3 +383,26 @@
   }
 }
 
+
+/* Legal consent and global modal animation: AuthModal is portalled to document.body. */
+.legal-header-links { display: flex; align-items: center; gap: 4px; }
+.auth-modal-card .legal-consent-check {
+  display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 14px;
+  color: var(--market-text-secondary, #58677a); font-size: 13px; line-height: 1.5; cursor: pointer;
+}
+.auth-modal-card .legal-consent-check input {
+  flex-shrink: 0; width: 16px; height: 16px; margin-top: 2px;
+  accent-color: var(--market-info, #356fc4); cursor: pointer;
+}
+.auth-modal-card .legal-consent-check a, .auth-modal-card .auth-legal-note a {
+  color: var(--market-info, #356fc4); text-decoration: underline; text-underline-offset: 2px;
+}
+.auth-modal-card .auth-legal-note {
+  margin: 14px 0 0; color: var(--market-text-secondary, #58677a);
+  font-size: 12px; line-height: 1.5; text-align: center;
+}
+.auth-modal-card .btn-auth-submit:disabled { cursor: not-allowed; opacity: .5; }
+@media (prefers-reduced-motion: no-preference) {
+  .auth-modal-backdrop { animation: ds-fade-in var(--ds-duration-base, .22s) ease both; }
+  .auth-modal-card { animation: ds-modal-in .28s cubic-bezier(.2, .7, .2, 1) both; }
+}

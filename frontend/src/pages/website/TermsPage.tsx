@@ -27,7 +27,7 @@ const sections: Section[] = [
     title: "Acceptance of terms",
     body: [
       <>These Terms and Conditions (&ldquo;Terms&rdquo;) govern your access to and use of Trade Overview, including its trading journal, analytics, portfolio risk tools, market intelligence pages and related services (together, the &ldquo;Platform&rdquo;), operated by {OPERATOR_NAME}.</>,
-      <>By creating an account or using the Platform, you confirm that you have read these Terms and agree to be bound by them. If you do not agree, you must not use the Platform.</>,
+      <>By creating an account or using the Platform, you confirm that you have read these Terms and agree to be bound by them. If you do not agree, you must not use the Platform. Please also read our <a href="/privacy">Privacy Policy</a>, which explains how we handle your information.</>,
     ],
   },
   {
@@ -145,9 +145,10 @@ export default function TermsPage() {
             <small>INTELLIGENCE</small>
           </span>
         </a>
-        <a className="legal-back-link" href="/?page=overview">
-          &larr; Back to dashboard
-        </a>
+        <div className="legal-header-links">
+          <a className="legal-back-link" href="/privacy">Privacy Policy</a>
+          <a className="legal-back-link" href="/?page=overview">&larr; Back to dashboard</a>
+        </div>
       </header>
 
       <article className="legal-article">
